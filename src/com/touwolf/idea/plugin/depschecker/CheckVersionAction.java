@@ -4,43 +4,43 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.touwolf.idea.plugin.depschecker.model.DependencyInfo;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowAnchor;
+import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.ui.content.Content;
+import com.intellij.ui.content.ContentManager;
+import com.intellij.util.ui.JBUI;
 import com.touwolf.idea.plugin.depschecker.model.PomInfo;
+import java.awt.*;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.*;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 public class CheckVersionAction extends AnAction
 {
+    private static final String TOOL_WINDOW_ID = "check_version_action_tool_window_id";
+
     @Override
     public void actionPerformed(AnActionEvent event)
     {
         Project project = event.getProject();
         if (project == null)
         {
-            //todo: empty tool windows
             return;
         }
         List<PomInfo> pomInfos = findPomInfos(project.getBaseDir());
-        for (PomInfo pomInfo : pomInfos)
+        ToolWindowManager toolWindowMgr = ToolWindowManager.getInstance(project);
+        ToolWindow tw = toolWindowMgr.getToolWindow(TOOL_WINDOW_ID);
+        if (tw == null)
         {
-            System.out.println(pomInfo.toString());
-            System.out.println("MANAGEMENT DEPENDENCIES:");
-            for (DependencyInfo depInfo : pomInfo.getDependenciesManagement())
-            {
-                System.out.println("    -- " + depInfo.toString());
-            }
-            System.out.println("DEPENDENCIES:");
-            for (DependencyInfo depInfo : pomInfo.getDependencies())
-            {
-                System.out.println("    -- " + depInfo.toString());
-            }
+            tw = toolWindowMgr.registerToolWindow(TOOL_WINDOW_ID, true, ToolWindowAnchor.BOTTOM, true);
         }
-        //ToolWindow toolWindow = event.getData(LangDataKeys.TOOL_WINDOW);
-        //Messages.showMessageDialog(project, "Hello, " + project.getName() + " project!\n I am glad to see you.", "Information", Messages.getInformationIcon());
+        final ToolWindow toolWindow = tw;
+        toolWindow.activate(() -> updateContent(toolWindow, pomInfos), true);
     }
 
     private List<PomInfo> findPomInfos(VirtualFile baseDir)
@@ -96,5 +96,76 @@ public class CheckVersionAction extends AnAction
         {
             return null;
         }
+    }
+
+    private void updateContent(ToolWindow toolWindow, List<PomInfo> pomInfos)
+    {
+        ContentManager contentManager = toolWindow.getContentManager();
+        contentManager.removeAllContents(true);
+        Content content = contentManager.getFactory().createContent(createContent(pomInfos), "TITLE", false);
+        contentManager.addContent(content);
+    }
+
+    private JComponent createContent(List<PomInfo> pomInfos)
+    {
+        //todo: use table
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridy = -1;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+
+        pomInfos.forEach(pomInfo ->
+        {
+            constraints.gridx = 0;
+            constraints.gridy++;
+            constraints.weightx = 1;
+            constraints.insets = JBUI.insets(2, 2, 0, 0);
+            JLabel pomLabel = new JLabel(pomInfo.getArtifactId() + ":", SwingConstants.LEFT);
+            panel.add(pomLabel, constraints);
+
+            constraints.gridy++;
+            constraints.weightx = 1;
+            constraints.insets = JBUI.insets(2, 20, 0, 0);
+            String depMgTitle = "Management dependencies:";
+            if (pomInfo.getDependenciesManagement().isEmpty())
+            {
+                depMgTitle += " (EMPTY)";
+            }
+            JLabel depMgTitleLabel = new JLabel(depMgTitle, SwingConstants.LEFT);
+            panel.add(depMgTitleLabel, constraints);
+
+            pomInfo.getDependenciesManagement().forEach(dependencyInfo ->
+            {
+                constraints.gridy++;
+                constraints.weightx = 0.3;
+                constraints.insets = JBUI.insets(2, 40, 0, 0);
+                JLabel label = new JLabel(dependencyInfo.getGroupId() + ":" + dependencyInfo.getArtifactId(), SwingConstants.LEFT);
+                panel.add(label, constraints);
+            });
+
+            constraints.gridy++;
+            constraints.weightx = 1;
+            constraints.insets = JBUI.insets(2, 10, 0, 0);
+            String depTitle = "Dependencies:";
+            if (pomInfo.getDependencies().isEmpty())
+            {
+                depTitle += " (EMPTY)";
+            }
+            JLabel depTitleLabel = new JLabel(depTitle, SwingConstants.LEFT);
+            panel.add(depTitleLabel, constraints);
+
+            pomInfo.getDependencies().forEach(dependencyInfo ->
+            {
+                constraints.gridy++;
+                constraints.weightx = 0.3;
+                constraints.insets = JBUI.insets(2, 20, 0, 0);
+                JLabel label = new JLabel(dependencyInfo.getGroupId() + ":" + dependencyInfo.getArtifactId(), SwingConstants.LEFT);
+                panel.add(label, constraints);
+            });
+        });
+
+        return panel;
     }
 }

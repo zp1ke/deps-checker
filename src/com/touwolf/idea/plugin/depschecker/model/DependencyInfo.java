@@ -1,5 +1,6 @@
 package com.touwolf.idea.plugin.depschecker.model;
 
+import java.util.Properties;
 import org.apache.maven.model.Dependency;
 
 public class DependencyInfo extends BaseInfo
@@ -33,13 +34,13 @@ public class DependencyInfo extends BaseInfo
         this.canUpgrade = canUpgrade;
     }
 
-    public static DependencyInfo parse(Dependency dependency)
+    public static DependencyInfo parse(Dependency dependency, Properties properties)
     {
         if (dependency == null)
         {
             return null;
         }
-        String version = findVersion(dependency);
+        String version = findVersion(dependency, properties);
         if (version == null)
         {
             return null;
@@ -47,11 +48,31 @@ public class DependencyInfo extends BaseInfo
         return new DependencyInfo(dependency.getGroupId(), dependency.getArtifactId(), version);
     }
 
-    private static String findVersion(Dependency dependency)
+    private static String findVersion(Dependency dependency, Properties properties)
     {
         if (dependency.getVersion() != null)
         {
-            return dependency.getVersion();
+            String version = dependency.getVersion();
+            int propStartTag = version.indexOf("${");
+            if (propStartTag >= 0)
+            {
+                int propEndTag = version.indexOf("}", propStartTag);
+                if (propEndTag > propStartTag)
+                {
+                    String propertyName = version.substring(propStartTag + 2, propEndTag);
+                    if (properties.containsKey(propertyName))
+                    {
+                        version = version.substring(0, propStartTag) +
+                                properties.getProperty(propertyName) +
+                                version.substring(propEndTag + 1);
+                        return version;
+                    }
+                }
+            }
+            else
+            {
+                return version;
+            }
         }
         return null;
     }

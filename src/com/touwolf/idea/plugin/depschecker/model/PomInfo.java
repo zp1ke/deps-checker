@@ -1,6 +1,7 @@
 package com.touwolf.idea.plugin.depschecker.model;
 
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
@@ -62,9 +63,15 @@ public class PomInfo extends BaseInfo
             return null;
         }
         PomInfo info = new PomInfo(groupId, model.getArtifactId(), version);
+        Properties properties = new Properties();
+        if (parent != null)
+        {
+            properties.putAll(parent.getProperties());
+        }
+        properties.putAll(model.getProperties());
         for (Dependency dependency : model.getDependencies())
         {
-            DependencyInfo depInfo = DependencyInfo.parse(dependency);
+            DependencyInfo depInfo = DependencyInfo.parse(dependency, properties);
             if (depInfo != null)
             {
                 info.getDependencies().add(depInfo);
@@ -73,7 +80,7 @@ public class PomInfo extends BaseInfo
         if (model.getDependencyManagement() != null)
         for (Dependency dependency : model.getDependencyManagement().getDependencies())
         {
-            DependencyInfo depInfo = DependencyInfo.parse(dependency);
+            DependencyInfo depInfo = DependencyInfo.parse(dependency, properties);
             if (depInfo != null)
             {
                 info.getDependenciesManagement().add(depInfo);
