@@ -9,8 +9,9 @@ import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
-import com.intellij.util.ui.JBUI;
+import com.intellij.ui.table.JBTable;
 import com.touwolf.idea.plugin.depschecker.model.PomInfo;
+import com.touwolf.idea.plugin.depschecker.ui.CheckVersionTableModel;
 import java.awt.*;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -108,64 +109,11 @@ public class CheckVersionAction extends AnAction
 
     private JComponent createContent(List<PomInfo> pomInfos)
     {
-        //todo: use table
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridBagLayout());
-
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.gridy = -1;
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-
-        pomInfos.forEach(pomInfo ->
-        {
-            constraints.gridx = 0;
-            constraints.gridy++;
-            constraints.weightx = 1;
-            constraints.insets = JBUI.insets(2, 2, 0, 0);
-            JLabel pomLabel = new JLabel(pomInfo.getArtifactId() + ":", SwingConstants.LEFT);
-            panel.add(pomLabel, constraints);
-
-            constraints.gridy++;
-            constraints.weightx = 1;
-            constraints.insets = JBUI.insets(2, 20, 0, 0);
-            String depMgTitle = "Management dependencies:";
-            if (pomInfo.getDependenciesManagement().isEmpty())
-            {
-                depMgTitle += " (EMPTY)";
-            }
-            JLabel depMgTitleLabel = new JLabel(depMgTitle, SwingConstants.LEFT);
-            panel.add(depMgTitleLabel, constraints);
-
-            pomInfo.getDependenciesManagement().forEach(dependencyInfo ->
-            {
-                constraints.gridy++;
-                constraints.weightx = 0.3;
-                constraints.insets = JBUI.insets(2, 40, 0, 0);
-                JLabel label = new JLabel(dependencyInfo.getGroupId() + ":" + dependencyInfo.getArtifactId(), SwingConstants.LEFT);
-                panel.add(label, constraints);
-            });
-
-            constraints.gridy++;
-            constraints.weightx = 1;
-            constraints.insets = JBUI.insets(2, 10, 0, 0);
-            String depTitle = "Dependencies:";
-            if (pomInfo.getDependencies().isEmpty())
-            {
-                depTitle += " (EMPTY)";
-            }
-            JLabel depTitleLabel = new JLabel(depTitle, SwingConstants.LEFT);
-            panel.add(depTitleLabel, constraints);
-
-            pomInfo.getDependencies().forEach(dependencyInfo ->
-            {
-                constraints.gridy++;
-                constraints.weightx = 0.3;
-                constraints.insets = JBUI.insets(2, 20, 0, 0);
-                JLabel label = new JLabel(dependencyInfo.getGroupId() + ":" + dependencyInfo.getArtifactId(), SwingConstants.LEFT);
-                panel.add(label, constraints);
-            });
-        });
-
+        CheckVersionTableModel model = new CheckVersionTableModel(pomInfos);
+        JBTable table = new JBTable(model);
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(table.getTableHeader(), BorderLayout.PAGE_START);
+        panel.add(table, BorderLayout.CENTER);
         return panel;
     }
 }
