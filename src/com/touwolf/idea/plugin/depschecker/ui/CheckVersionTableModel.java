@@ -1,10 +1,9 @@
 package com.touwolf.idea.plugin.depschecker.ui;
 
+import com.touwolf.idea.plugin.depschecker.model.DependencyInfo;
 import com.touwolf.idea.plugin.depschecker.model.PomInfo;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 
@@ -14,46 +13,38 @@ public class CheckVersionTableModel extends AbstractTableModel
         "Dependency", "Version", "Last Version", "Upgrade"
     };
 
-    private final List data;
+    private final List<DependencyInfo> data;
 
-    private final Integer rowCount;
-
+    @SuppressWarnings("unchecked")
     public CheckVersionTableModel(List<PomInfo> pomInfoList)
     {
-        data = new ArrayList<>(pomInfoList.size());
-        AtomicInteger count = new AtomicInteger(0);
+        data = new LinkedList<>();
         pomInfoList.forEach(pomInfo ->
         {
-            //header
-            data.add(pomInfo.getArtifactId());
-            String title = "-- Dependencies management:";
-            if (pomInfo.getDependenciesManagement().isEmpty())
-            {
-                title += " (EMPTY)";
-            }
-            data.add(title);
-            pomInfo.getDependenciesManagement().forEach(data::add);
-            title = "-- Dependencies:";
-            if (pomInfo.getDependencies().isEmpty())
-            {
-                title += " (EMPTY)";
-            }
-            data.add(title);
-            pomInfo.getDependencies().forEach(depend
-                    encyInfo ->
-            {
-                String dependencyTitle = "---- " + dependencyInfo.getGroupId() + ":" + dependencyInfo.getArtifactId();
-                data.add(Arrays.asList(dependencyTitle, dependencyInfo.getVersion(), "", ""));
-            });
-            count.addAndGet(3 + pomInfo.getDependenciesManagement().size() + pomInfo.getDependencies().size());
+            pomInfo.getDependenciesManagement()
+                .stream()
+                .filter(dependencyInfo -> !data.contains(dependencyInfo))
+                .forEach(data::add);
+            pomInfo.getDependencies()
+                .stream()
+                .filter(dependencyInfo -> !data.contains(dependencyInfo))
+                .forEach(data::add);
         });
-        rowCount = count.get();
+        data.sort((dep1, dep2) ->
+        {
+            int result = dep2.getGroupId().compareTo(dep1.getGroupId());
+            if (result == 0)
+            {
+                result = dep2.getArtifactId().compareTo(dep1.getArtifactId());
+            }
+            return result;
+        });
     }
 
     @Override
     public int getRowCount()
     {
-        return rowCount;
+        return data.size();
     }
 
     @Override
@@ -80,7 +71,7 @@ public class CheckVersionTableModel extends AbstractTableModel
         {
             return null;
         }
-        return data.get(rowIndex).get(columnIndex);
+        return data.get(rowIndex);
     }
 
     @Override

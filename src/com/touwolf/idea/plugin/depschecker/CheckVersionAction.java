@@ -11,6 +11,7 @@ import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
 import com.intellij.ui.table.JBTable;
 import com.touwolf.idea.plugin.depschecker.model.PomInfo;
+import com.touwolf.idea.plugin.depschecker.ui.CheckVersionCellRenderer;
 import com.touwolf.idea.plugin.depschecker.ui.CheckVersionTableModel;
 import java.awt.*;
 import java.io.IOException;
@@ -111,6 +112,8 @@ public class CheckVersionAction extends AnAction
     {
         CheckVersionTableModel model = new CheckVersionTableModel(pomInfos);
         JBTable table = new JBTable(model);
+        table.setStriped(true);
+        table.setDefaultRenderer(Object.class, new CheckVersionCellRenderer());
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(table.getTableHeader(), BorderLayout.PAGE_START);
         panel.add(table, BorderLayout.CENTER);
