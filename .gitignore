@@ -4,5 +4,6 @@
 /.idea/gradle.xml
 /.idea/libraries
 /.idea/dictionaries
+/.idea/modules
 .DS_Store
 /build
