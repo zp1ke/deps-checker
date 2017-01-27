@@ -1,1 +1,1 @@
-# java-deps-checker
+# deps-checker
