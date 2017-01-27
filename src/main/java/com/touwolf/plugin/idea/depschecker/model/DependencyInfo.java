@@ -5,23 +5,19 @@ import org.apache.maven.model.Dependency;
 
 public class DependencyInfo extends BaseInfo
 {
-    private String lastVersion;
+    private final String lastVersion;
 
     private Boolean canUpgrade;
 
-    private DependencyInfo(String groupId, String artifactId, String version)
+    private DependencyInfo(String groupId, String artifactId, String version, String lastVersion)
     {
         super(groupId, artifactId, version);
+        this.lastVersion = lastVersion;
     }
 
     public String getLastVersion()
     {
         return lastVersion;
-    }
-
-    public void setLastVersion(String lastVersion)
-    {
-        this.lastVersion = lastVersion;
     }
 
     public Boolean getCanUpgrade()
@@ -45,7 +41,8 @@ public class DependencyInfo extends BaseInfo
         {
             return null;
         }
-        return new DependencyInfo(dependency.getGroupId(), dependency.getArtifactId(), version);
+        String lastVersion = findLastVersion(dependency);
+        return new DependencyInfo(dependency.getGroupId(), dependency.getArtifactId(), version, lastVersion);
     }
 
     private static String findVersion(Dependency dependency, Properties properties)
@@ -75,5 +72,11 @@ public class DependencyInfo extends BaseInfo
             }
         }
         return null;
+    }
+
+    private static String findLastVersion(Dependency dependency)
+    {
+        //todo
+        return "?";
     }
 }
