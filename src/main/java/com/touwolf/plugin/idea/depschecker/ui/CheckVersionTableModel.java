@@ -1,7 +1,7 @@
-package com.touwolf.idea.plugin.depschecker.ui;
+package com.touwolf.plugin.idea.depschecker.ui;
 
-import com.touwolf.idea.plugin.depschecker.model.DependencyInfo;
-import com.touwolf.idea.plugin.depschecker.model.PomInfo;
+import com.touwolf.plugin.idea.depschecker.model.DependencyInfo;
+import com.touwolf.plugin.idea.depschecker.model.PomInfo;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.*;

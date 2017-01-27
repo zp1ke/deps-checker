@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/java-deps-checker.iml" filepath="$PROJECT_DIR$/java-deps-checker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/deps-checker.iml" filepath="$PROJECT_DIR$/.idea/modules/deps-checker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/deps-checker_main.iml" filepath="$PROJECT_DIR$/.idea/modules/deps-checker_main.iml" group="deps-checker" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/deps-checker_test.iml" filepath="$PROJECT_DIR$/.idea/modules/deps-checker_test.iml" group="deps-checker" />
     </modules>
   </component>
 </project>

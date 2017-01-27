@@ -1,6 +1,6 @@
-package com.touwolf.idea.plugin.depschecker.ui;
+package com.touwolf.plugin.idea.depschecker.ui;
 
-import com.touwolf.idea.plugin.depschecker.model.DependencyInfo;
+import com.touwolf.plugin.idea.depschecker.model.DependencyInfo;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;

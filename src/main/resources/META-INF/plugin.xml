@@ -1,0 +1,28 @@
+<idea-plugin version="2">
+    <id>com.touwolf.plugin.idea.depschecker</id>
+    <name>Java Dependencies Checker</name>
+    <version>0.1.0</version>
+    <vendor email="michel@touwolf.com"
+            url="https://touwolf.com">Touwolf</vendor>
+
+    <description><![CDATA[
+        Checks <strong>Java</strong> projects dependencies for version upgrades.
+    ]]></description>
+
+    <change-notes><![CDATA[
+        Initial version.
+    ]]></change-notes>
+
+    <idea-version since-build="2016.3.2"/>
+
+    <extensions defaultExtensionNs="com.intellij">
+    </extensions>
+
+    <actions>
+        <action id="DepsChecker.CheckVersionAction" class="com.touwolf.plugin.idea.depschecker.action.CheckVersionAction"
+                text="Check Dependencies _Version..." description="Checks dependencies versions with repository last version.">
+            <add-to-group group-id="AnalyzeActions" anchor="last"/>
+        </action>
+    </actions>
+
+</idea-plugin>

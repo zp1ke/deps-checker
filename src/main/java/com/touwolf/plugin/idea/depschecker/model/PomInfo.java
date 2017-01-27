@@ -1,4 +1,4 @@
-package com.touwolf.idea.plugin.depschecker.model;
+package com.touwolf.plugin.idea.depschecker.model;
 
 import java.util.HashSet;
 import java.util.Properties;

@@ -1,4 +1,4 @@
-package com.touwolf.idea.plugin.depschecker;
+package com.touwolf.plugin.idea.depschecker.action;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -10,9 +10,9 @@ import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
 import com.intellij.ui.table.JBTable;
-import com.touwolf.idea.plugin.depschecker.model.PomInfo;
-import com.touwolf.idea.plugin.depschecker.ui.CheckVersionCellRenderer;
-import com.touwolf.idea.plugin.depschecker.ui.CheckVersionTableModel;
+import com.touwolf.plugin.idea.depschecker.model.PomInfo;
+import com.touwolf.plugin.idea.depschecker.ui.CheckVersionCellRenderer;
+import com.touwolf.plugin.idea.depschecker.ui.CheckVersionTableModel;
 import java.awt.*;
 import java.io.IOException;
 import java.util.LinkedList;
