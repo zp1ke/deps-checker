@@ -35,7 +35,7 @@ public class MavenApiHelper
     private static <T> T traverseMap(Map map, Class<T> finalCls, String... keys)
     {
         Map current = map;
-        for (int i = 0; i < keys.length - 2; i++)
+        for (int i = 0; i < keys.length - 1; i++)
         {
             Object currentValue = current.get(keys[i]);
             if (currentValue == null || !Map.class.isAssignableFrom(currentValue.getClass()))
