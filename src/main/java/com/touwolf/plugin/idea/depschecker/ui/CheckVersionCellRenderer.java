@@ -34,6 +34,14 @@ public class CheckVersionCellRenderer extends DefaultTableCellRenderer
                     setFont(TextAttribute.WEIGHT_BOLD);
                     break;
                 }
+                case 2:
+                {
+                    //latest version
+                    setText(info.getLatestVersion());
+                    setHorizontalAlignment(SwingConstants.RIGHT);
+                    setFont(TextAttribute.WEIGHT_BOLD);
+                    break;
+                }
             }
         }
         if (selected)

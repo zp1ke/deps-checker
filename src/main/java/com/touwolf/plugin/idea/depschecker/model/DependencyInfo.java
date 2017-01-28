@@ -1,23 +1,24 @@
 package com.touwolf.plugin.idea.depschecker.model;
 
+import com.touwolf.plugin.idea.depschecker.rest.MavenApiHelper;
 import java.util.Properties;
 import org.apache.maven.model.Dependency;
 
 public class DependencyInfo extends BaseInfo
 {
-    private final String lastVersion;
+    private final String latestVersion;
 
     private Boolean canUpgrade;
 
     private DependencyInfo(String groupId, String artifactId, String version, String lastVersion)
     {
         super(groupId, artifactId, version);
-        this.lastVersion = lastVersion;
+        this.latestVersion = lastVersion;
     }
 
-    public String getLastVersion()
+    public String getLatestVersion()
     {
-        return lastVersion;
+        return latestVersion;
     }
 
     public Boolean getCanUpgrade()
@@ -41,8 +42,10 @@ public class DependencyInfo extends BaseInfo
         {
             return null;
         }
-        String lastVersion = findLastVersion(dependency);
-        return new DependencyInfo(dependency.getGroupId(), dependency.getArtifactId(), version, lastVersion);
+        String groupId = dependency.getGroupId();
+        String artifactId = dependency.getArtifactId();
+        String lastVersion = MavenApiHelper.findLatestVersion(groupId, artifactId);
+        return new DependencyInfo(groupId, artifactId, version, lastVersion);
     }
 
     private static String findVersion(Dependency dependency, Properties properties)
@@ -72,11 +75,5 @@ public class DependencyInfo extends BaseInfo
             }
         }
         return null;
-    }
-
-    private static String findLastVersion(Dependency dependency)
-    {
-        //todo
-        return "?";
     }
 }
