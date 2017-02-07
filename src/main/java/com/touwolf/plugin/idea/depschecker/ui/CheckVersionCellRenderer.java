@@ -23,7 +23,7 @@ public class CheckVersionCellRenderer extends DefaultTableCellRenderer
                     //groupId:artifactId
                     setText(info.getGroupId() + ":" + info.getArtifactId());
                     setHorizontalAlignment(SwingConstants.LEFT);
-                    setFont(TextAttribute.WEIGHT_DEMIBOLD);
+                    setFont(modifyFont(TextAttribute.WEIGHT_DEMIBOLD));
                     break;
                 }
                 case 1:
@@ -31,7 +31,7 @@ public class CheckVersionCellRenderer extends DefaultTableCellRenderer
                     //version
                     setText(info.getVersion());
                     setHorizontalAlignment(SwingConstants.RIGHT);
-                    setFont(TextAttribute.WEIGHT_BOLD);
+                    setFont(modifyFont(TextAttribute.WEIGHT_BOLD));
                     break;
                 }
                 case 2:
@@ -39,7 +39,29 @@ public class CheckVersionCellRenderer extends DefaultTableCellRenderer
                     //latest version
                     setText(info.getLatestVersion());
                     setHorizontalAlignment(SwingConstants.RIGHT);
-                    setFont(TextAttribute.WEIGHT_BOLD);
+                    setFont(modifyFont(TextAttribute.WEIGHT_BOLD));
+                    break;
+                }
+                case 3:
+                {
+                    //upgrade action
+                    if (info.canUpgrade())
+                    {
+                        setOpaque(true);
+                        JButton button = new JButton("UPGRADE");
+                        button.setFont(modifyFont(TextAttribute.WEIGHT_BOLD));
+                        button.addActionListener(e ->
+                        {
+                            System.out.println(info.toString());
+                        });
+                        return button;
+                    }
+                    else
+                    {
+                        setText("N/A");
+                        setHorizontalAlignment(SwingConstants.CENTER);
+                        setFont(modifyFont(TextAttribute.WEIGHT_BOLD));
+                    }
                     break;
                 }
             }
@@ -52,10 +74,9 @@ public class CheckVersionCellRenderer extends DefaultTableCellRenderer
         return this;
     }
 
-    private void setFont(Float weight)
+    private Font modifyFont(Float weight)
     {
         Map<TextAttribute, Float> attrs = Collections.singletonMap(TextAttribute.WEIGHT, weight);
-        Font font = getFont().deriveFont(attrs);
-        setFont(font);
+        return getFont().deriveFont(attrs);
     }
 }

@@ -1,4 +1,3 @@
-
 package com.touwolf.plugin.idea.depschecker.rest;
 
 import java.util.List;

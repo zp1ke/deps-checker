@@ -1,14 +1,13 @@
 package com.touwolf.plugin.idea.depschecker.model;
 
 import com.touwolf.plugin.idea.depschecker.rest.MavenApiHelper;
+import java.util.Objects;
 import java.util.Properties;
 import org.apache.maven.model.Dependency;
 
 public class DependencyInfo extends BaseInfo
 {
     private final String latestVersion;
-
-    private Boolean canUpgrade;
 
     private DependencyInfo(String groupId, String artifactId, String version, String lastVersion)
     {
@@ -21,14 +20,9 @@ public class DependencyInfo extends BaseInfo
         return latestVersion;
     }
 
-    public Boolean getCanUpgrade()
+    public boolean canUpgrade()
     {
-        return canUpgrade;
-    }
-
-    public void setCanUpgrade(Boolean canUpgrade)
-    {
-        this.canUpgrade = canUpgrade;
+        return !Objects.equals(latestVersion, getVersion());
     }
 
     public static DependencyInfo parse(Dependency dependency, Properties properties)
