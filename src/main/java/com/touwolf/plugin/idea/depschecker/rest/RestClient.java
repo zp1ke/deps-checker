@@ -8,12 +8,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class RestClient
 {
     private static final Gson GSON = new GsonBuilder().create();
 
-    public static <T> T get(String urlStr, Class<T> cls)
+    @Nullable
+    public static <T> T get(@NotNull String urlStr, @NotNull Class<T> cls)
     {
         try
         {
@@ -34,6 +37,7 @@ public class RestClient
         }
     }
 
+    @NotNull
     private static String readResponse(InputStream inputStream) throws IOException
     {
         BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));

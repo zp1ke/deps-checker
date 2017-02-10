@@ -9,10 +9,9 @@ import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
-import com.intellij.ui.table.JBTable;
 import com.touwolf.plugin.idea.depschecker.model.PomInfo;
-import com.touwolf.plugin.idea.depschecker.ui.CheckVersionCellRenderer;
-import com.touwolf.plugin.idea.depschecker.ui.CheckVersionTableModel;
+import com.touwolf.plugin.idea.depschecker.ui.CheckVersionTable;
+import com.touwolf.plugin.idea.depschecker.ui.CheckVersionToolbar;
 import java.awt.*;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -21,10 +20,12 @@ import javax.swing.*;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class CheckVersionAction extends AnAction
 {
-    private static final String TOOL_WINDOW_ID = "check_version_action_tool_window_id";
+    private static final String TOOL_WINDOW_ID = "Check dependencies version";
 
     @Override
     public void actionPerformed(AnActionEvent event)
@@ -42,10 +43,11 @@ public class CheckVersionAction extends AnAction
             tw = toolWindowMgr.registerToolWindow(TOOL_WINDOW_ID, true, ToolWindowAnchor.BOTTOM, true);
         }
         final ToolWindow toolWindow = tw;
-        toolWindow.activate(() -> updateContent(toolWindow, pomInfos), true);
+        toolWindow.activate(() -> updateContent(toolWindow, pomInfos, project.getName()), true);
     }
 
-    private List<PomInfo> findPomInfos(VirtualFile baseDir)
+    @NotNull
+    private List<PomInfo> findPomInfos(@NotNull VirtualFile baseDir)
     {
         List<PomInfo> poms = new LinkedList<>();
         if (!baseDir.isDirectory() || baseDir.getName().startsWith("."))
@@ -71,7 +73,8 @@ public class CheckVersionAction extends AnAction
         return poms;
     }
 
-    private PomInfo parsePom(VirtualFile file)
+    @Nullable
+    private PomInfo parsePom(@NotNull VirtualFile file)
     {
         if (file.isDirectory() || !"pom.xml".equals(file.getName()))
         {
@@ -100,22 +103,26 @@ public class CheckVersionAction extends AnAction
         }
     }
 
-    private void updateContent(ToolWindow toolWindow, List<PomInfo> pomInfos)
+    private void updateContent(ToolWindow toolWindow, List<PomInfo> pomInfos, String projectName)
     {
         ContentManager contentManager = toolWindow.getContentManager();
         contentManager.removeAllContents(true);
-        Content content = contentManager.getFactory().createContent(createContent(pomInfos), "TITLE", false);
+        Content content = contentManager.getFactory().createContent(createContent(pomInfos), projectName, false);
         contentManager.addContent(content);
     }
 
-    private JComponent createContent(List<PomInfo> pomInfos)
+    @NotNull
+    private JComponent createContent(@NotNull List<PomInfo> pomInfos)
     {
-        CheckVersionTableModel model = new CheckVersionTableModel(pomInfos);
-        JBTable table = new JBTable(model);
-        table.setStriped(true);
-        table.setDefaultRenderer(Object.class, new CheckVersionCellRenderer());
+        CheckVersionToolbar toolBar = new CheckVersionToolbar();
+        toolBar.add(new JLabel("P"));//fixme
+
+        CheckVersionTable table = new CheckVersionTable(pomInfos);
+        table.setSelectionListener(toolBar);
+
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(table.getTableHeader(), BorderLayout.PAGE_START);
+        panel.add(toolBar, BorderLayout.WEST);
         panel.add(table, BorderLayout.CENTER);
         return panel;
     }

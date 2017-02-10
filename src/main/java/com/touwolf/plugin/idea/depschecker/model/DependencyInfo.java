@@ -4,17 +4,20 @@ import com.touwolf.plugin.idea.depschecker.rest.MavenApiHelper;
 import java.util.Objects;
 import java.util.Properties;
 import org.apache.maven.model.Dependency;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class DependencyInfo extends BaseInfo
 {
     private final String latestVersion;
 
-    private DependencyInfo(String groupId, String artifactId, String version, String lastVersion)
+    private DependencyInfo(@NotNull String groupId,@NotNull String artifactId, @NotNull String version, @NotNull String lastVersion)
     {
         super(groupId, artifactId, version);
         this.latestVersion = lastVersion;
     }
 
+    @NotNull
     public String getLatestVersion()
     {
         return latestVersion;
@@ -25,7 +28,8 @@ public class DependencyInfo extends BaseInfo
         return !Objects.equals(latestVersion, getVersion());
     }
 
-    public static DependencyInfo parse(Dependency dependency, Properties properties)
+    @Nullable
+    public static DependencyInfo parse(@Nullable Dependency dependency, @NotNull Properties properties)
     {
         if (dependency == null)
         {
@@ -42,7 +46,8 @@ public class DependencyInfo extends BaseInfo
         return new DependencyInfo(groupId, artifactId, version, lastVersion);
     }
 
-    private static String findVersion(Dependency dependency, Properties properties)
+    @Nullable
+    private static String findVersion(@NotNull Dependency dependency, @NotNull Properties properties)
     {
         if (dependency.getVersion() != null)
         {

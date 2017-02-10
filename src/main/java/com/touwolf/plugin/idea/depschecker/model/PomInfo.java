@@ -6,10 +6,12 @@ import java.util.Set;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Parent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class PomInfo extends BaseInfo
 {
-    private PomInfo(String groupId, String artifactId, String version)
+    private PomInfo(@NotNull String groupId, @NotNull String artifactId, @NotNull String version)
     {
         super(groupId, artifactId, version);
     }
@@ -18,6 +20,7 @@ public class PomInfo extends BaseInfo
 
     private Set<DependencyInfo> dependencies;
 
+    @NotNull
     public Set<DependencyInfo> getDependenciesManagement()
     {
         if (dependenciesManagement == null)
@@ -27,11 +30,7 @@ public class PomInfo extends BaseInfo
         return dependenciesManagement;
     }
 
-    public void setDependenciesManagement(Set<DependencyInfo> dependenciesManagement)
-    {
-        this.dependenciesManagement = dependenciesManagement;
-    }
-
+    @NotNull
     public Set<DependencyInfo> getDependencies()
     {
         if (dependencies == null)
@@ -41,12 +40,8 @@ public class PomInfo extends BaseInfo
         return dependencies;
     }
 
-    public void setDependencies(Set<DependencyInfo> dependencies)
-    {
-        this.dependencies = dependencies;
-    }
-
-    public static PomInfo parse(Model model, Model parent)
+    @Nullable
+    public static PomInfo parse(@Nullable Model model, @Nullable Model parent)
     {
         if (model == null)
         {
@@ -89,7 +84,8 @@ public class PomInfo extends BaseInfo
         return info;
     }
 
-    private static String findGroupId(Model model)
+    @Nullable
+    private static String findGroupId(@NotNull Model model)
     {
         if (model.getGroupId() != null)
         {
@@ -103,7 +99,8 @@ public class PomInfo extends BaseInfo
         return null;
     }
 
-    private static String findVersion(Model model)
+    @Nullable
+    private static String findVersion(@NotNull Model model)
     {
         if (model.getVersion() != null)
         {

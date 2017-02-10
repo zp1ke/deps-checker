@@ -2,12 +2,15 @@ package com.touwolf.plugin.idea.depschecker.rest;
 
 import java.util.List;
 import java.util.Map;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class MavenApiHelper
 {
     private static final String MAVEN_API_URL = "http://search.maven.org/solrsearch/select?q=g:\"GROUP\"+AND+a:\"ARTIFACT\"&rows=5&wt=json";
 
-    public static String findLatestVersion(String groupId, String artifactId)
+    @NotNull
+    public static String findLatestVersion(@NotNull String groupId, @NotNull String artifactId)
     {
         String url = MAVEN_API_URL
             .replace("GROUP", groupId)
@@ -31,7 +34,8 @@ public class MavenApiHelper
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T traverseMap(Map map, Class<T> finalCls, String... keys)
+    @Nullable
+    private static <T> T traverseMap(@NotNull Map map, @NotNull Class<T> finalCls, @NotNull String... keys)
     {
         Map current = map;
         for (int i = 0; i < keys.length - 1; i++)

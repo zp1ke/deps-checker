@@ -1,5 +1,7 @@
 package com.touwolf.plugin.idea.depschecker.model;
 
+import org.jetbrains.annotations.NotNull;
+
 public class BaseInfo
 {
     private final String groupId;
@@ -8,7 +10,7 @@ public class BaseInfo
 
     private final String version;
 
-    public BaseInfo(String groupId, String artifactId, String version)
+    public BaseInfo(@NotNull String groupId, @NotNull String artifactId, @NotNull String version)
     {
         this.groupId = groupId;
         this.artifactId = artifactId;
