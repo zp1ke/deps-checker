@@ -45,23 +45,16 @@ public class CheckVersionCellRenderer extends DefaultTableCellRenderer
                 case 3:
                 {
                     //upgrade action
-                    if (info.canUpgrade())
-                    {
-                        setOpaque(true);
-                        JButton button = new JButton("UPGRADE");
-                        button.setFont(modifyFont(TextAttribute.WEIGHT_BOLD));
-                        button.addActionListener(e ->
-                        {
-                            System.out.println(info.toString());
-                        });
-                        return button;
-                    }
-                    else
-                    {
-                        setText("N/A");
-                        setHorizontalAlignment(SwingConstants.CENTER);
-                        setFont(modifyFont(TextAttribute.WEIGHT_BOLD));
-                    }
+                    String text = info.canUpgrade() ? "UPGRADE" : "N/A";
+                    setText(text);
+                    setHorizontalAlignment(SwingConstants.CENTER);
+                    setFont(modifyFont(TextAttribute.WEIGHT_BOLD));
+                    break;
+                }
+                default:
+                {
+                    //just in case
+                    setText("");
                     break;
                 }
             }

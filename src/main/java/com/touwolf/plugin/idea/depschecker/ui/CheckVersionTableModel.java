@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import org.jetbrains.annotations.Nullable;
 
 public class CheckVersionTableModel extends AbstractTableModel
 {
@@ -86,5 +87,15 @@ public class CheckVersionTableModel extends AbstractTableModel
             return JButton.class;
         }
         return super.getColumnClass(columnIndex);
+    }
+
+    @Nullable
+    public DependencyInfo getDependencyInfo(int index)
+    {
+        if (index >= 0 && index < data.size())
+        {
+            return data.get(index);
+        }
+        return null;
     }
 }

@@ -115,15 +115,17 @@ public class CheckVersionAction extends AnAction
     private JComponent createContent(@NotNull List<PomInfo> pomInfos)
     {
         CheckVersionToolbar toolBar = new CheckVersionToolbar();
-        toolBar.add(new JLabel("P"));//fixme
 
         CheckVersionTable table = new CheckVersionTable(pomInfos);
         table.setSelectionListener(toolBar);
 
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        tablePanel.add(table.getTableHeader(), BorderLayout.PAGE_START);
+        tablePanel.add(table, BorderLayout.CENTER);
+
         JPanel panel = new JPanel(new BorderLayout());
-        panel.add(table.getTableHeader(), BorderLayout.PAGE_START);
         panel.add(toolBar, BorderLayout.WEST);
-        panel.add(table, BorderLayout.CENTER);
+        panel.add(tablePanel, BorderLayout.CENTER);
         return panel;
     }
 }
