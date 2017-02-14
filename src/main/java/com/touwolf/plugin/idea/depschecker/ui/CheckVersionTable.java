@@ -14,6 +14,8 @@ public class CheckVersionTable extends JBTable
 
     private SelectionListener listener;
 
+    private int selectedIndex = -1;
+
     public CheckVersionTable(@NotNull List<PomInfo> pomInfos)
     {
         super();
@@ -21,14 +23,16 @@ public class CheckVersionTable extends JBTable
         setModel(model);
         setStriped(true);
         setDefaultRenderer(Object.class, new CheckVersionCellRenderer());
-        getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        getSelectionModel().addListSelectionListener(e -> selectIndex(e.getFirstIndex()));
+        setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        getSelectionModel().addListSelectionListener(e -> updateSelected());
     }
 
-    private void selectIndex(int index)
+    private void updateSelected()
     {
-        if (listener != null)
+        int index = getSelectedRow();
+        if (listener != null && index != selectedIndex)
         {
+            selectedIndex = index;
             listener.selectionChange(model.getDependencyInfo(index));
         }
     }
