@@ -3,28 +3,22 @@ package com.touwolf.plugin.idea.depschecker.action;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
 import com.touwolf.plugin.idea.depschecker.ProjectManager;
+import com.touwolf.plugin.idea.depschecker.helper.MavenHelper;
 import com.touwolf.plugin.idea.depschecker.model.DependencyInfo;
 import com.touwolf.plugin.idea.depschecker.model.PomInfo;
 import com.touwolf.plugin.idea.depschecker.ui.CheckVersionTable;
 import com.touwolf.plugin.idea.depschecker.ui.CheckVersionToolbar;
 import com.touwolf.plugin.idea.depschecker.ui.Icons;
 import java.awt.*;
-import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 import javax.swing.*;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class CheckVersionAction extends AnAction implements ProjectManager
 {
@@ -44,7 +38,7 @@ public class CheckVersionAction extends AnAction implements ProjectManager
         {
             return;
         }
-        pomInfos = findPomInfos(project.getBaseDir());
+        pomInfos = MavenHelper.findPomInfos(project.getBaseDir());
         ToolWindowManager toolWindowMgr = ToolWindowManager.getInstance(project);
         ToolWindow tw = toolWindowMgr.getToolWindow(TOOL_WINDOW_ID);
         if (tw == null)
@@ -53,63 +47,6 @@ public class CheckVersionAction extends AnAction implements ProjectManager
         }
         final ToolWindow toolWindow = tw;
         toolWindow.activate(() -> updateContent(toolWindow, project.getName()), true);
-    }
-
-    @NotNull
-    private List<PomInfo> findPomInfos(@NotNull VirtualFile baseDir)
-    {
-        List<PomInfo> poms = new LinkedList<>();
-        if (!baseDir.isDirectory() || baseDir.getName().startsWith("."))
-        {
-            return poms;
-        }
-        VirtualFile[] children = baseDir.getChildren();
-        for (VirtualFile child : children)
-        {
-            if (child.isDirectory())
-            {
-                poms.addAll(findPomInfos(child));
-            }
-            else
-            {
-                PomInfo pom = parsePom(child);
-                if (pom != null)
-                {
-                    poms.add(pom);
-                }
-            }
-        }
-        return poms;
-    }
-
-    @Nullable
-    private PomInfo parsePom(@NotNull VirtualFile file)
-    {
-        if (file.isDirectory() || !"pom.xml".equals(file.getName()))
-        {
-            return null;
-        }
-
-        MavenXpp3Reader reader = new MavenXpp3Reader();
-        try
-        {
-            Model model = reader.read(file.getInputStream());
-            Model parent = null;
-            if (model.getParent() != null && file.getParent() != null && file.getParent().getParent() != null)
-            {
-                VirtualFile parentDirFile = file.getParent().getParent();
-                VirtualFile parentFile = parentDirFile.findChild("pom.xml");
-                if (parentFile != null)
-                {
-                    parent = reader.read(parentFile.getInputStream());
-                }
-            }
-            return PomInfo.parse(model, parent);
-        }
-        catch (IOException | XmlPullParserException e)
-        {
-            return null;
-        }
     }
 
     private void updateContent(ToolWindow toolWindow, String projectName)
@@ -143,10 +80,10 @@ public class CheckVersionAction extends AnAction implements ProjectManager
     @Override
     public void upgrade(@NotNull DependencyInfo dependencyInfo)
     {
-        //todo
+        MavenHelper.upgradeDependency(project.getBaseDir(), dependencyInfo);
         if (table != null)
         {
-            pomInfos = findPomInfos(project.getBaseDir());
+            pomInfos = MavenHelper.findPomInfos(project.getBaseDir());
             table.update(pomInfos);
         }
     }

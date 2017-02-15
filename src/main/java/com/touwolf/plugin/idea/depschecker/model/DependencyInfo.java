@@ -1,6 +1,6 @@
 package com.touwolf.plugin.idea.depschecker.model;
 
-import com.touwolf.plugin.idea.depschecker.rest.MavenApiHelper;
+import com.touwolf.plugin.idea.depschecker.helper.MavenHelper;
 import java.util.Objects;
 import java.util.Properties;
 import org.apache.maven.model.Dependency;
@@ -42,7 +42,7 @@ public class DependencyInfo extends BaseInfo
         }
         String groupId = dependency.getGroupId();
         String artifactId = dependency.getArtifactId();
-        String lastVersion = MavenApiHelper.findLatestVersion(groupId, artifactId);
+        String lastVersion = MavenHelper.findLatestVersion(groupId, artifactId);
         return new DependencyInfo(groupId, artifactId, version, lastVersion);
     }
 

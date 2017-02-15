@@ -16,6 +16,8 @@ public class CheckVersionToolbar extends JToolBar implements CheckVersionTable.S
 
     private JButton upgradeButton;
 
+    private boolean upgrading = false;
+
     public CheckVersionToolbar(@NotNull ProjectManager manager)
     {
         super(SwingConstants.VERTICAL);
@@ -38,11 +40,12 @@ public class CheckVersionToolbar extends JToolBar implements CheckVersionTable.S
     @Override
     public void actionPerformed(ActionEvent e)
     {
-        if (dependencyInfo != null && dependencyInfo.canUpgrade())
+        if (dependencyInfo != null && dependencyInfo.canUpgrade() && !upgrading)
         {
-            //todo: add loading mask
+            upgrading = true;
+            upgradeButton.setEnabled(false);
             manager.upgrade(dependencyInfo);
-            //todo: remove loading mask
+            upgrading = false;
         }
     }
 }
