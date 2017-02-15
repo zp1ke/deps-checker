@@ -9,9 +9,12 @@ import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
+import com.touwolf.plugin.idea.depschecker.ProjectManager;
+import com.touwolf.plugin.idea.depschecker.model.DependencyInfo;
 import com.touwolf.plugin.idea.depschecker.model.PomInfo;
 import com.touwolf.plugin.idea.depschecker.ui.CheckVersionTable;
 import com.touwolf.plugin.idea.depschecker.ui.CheckVersionToolbar;
+import com.touwolf.plugin.idea.depschecker.ui.Icons;
 import java.awt.*;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -23,19 +26,25 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class CheckVersionAction extends AnAction
+public class CheckVersionAction extends AnAction implements ProjectManager
 {
     private static final String TOOL_WINDOW_ID = "Check dependencies version";
+
+    private CheckVersionTable table;
+
+    private List<PomInfo> pomInfos;
+
+    private Project project;
 
     @Override
     public void actionPerformed(AnActionEvent event)
     {
-        Project project = event.getProject();
+        project = event.getProject();
         if (project == null)
         {
             return;
         }
-        List<PomInfo> pomInfos = findPomInfos(project.getBaseDir());
+        pomInfos = findPomInfos(project.getBaseDir());
         ToolWindowManager toolWindowMgr = ToolWindowManager.getInstance(project);
         ToolWindow tw = toolWindowMgr.getToolWindow(TOOL_WINDOW_ID);
         if (tw == null)
@@ -43,7 +52,7 @@ public class CheckVersionAction extends AnAction
             tw = toolWindowMgr.registerToolWindow(TOOL_WINDOW_ID, true, ToolWindowAnchor.BOTTOM, true);
         }
         final ToolWindow toolWindow = tw;
-        toolWindow.activate(() -> updateContent(toolWindow, pomInfos, project.getName()), true);
+        toolWindow.activate(() -> updateContent(toolWindow, project.getName()), true);
     }
 
     @NotNull
@@ -103,20 +112,22 @@ public class CheckVersionAction extends AnAction
         }
     }
 
-    private void updateContent(ToolWindow toolWindow, List<PomInfo> pomInfos, String projectName)
+    private void updateContent(ToolWindow toolWindow, String projectName)
     {
+        toolWindow.setIcon(Icons.DEPS);
         ContentManager contentManager = toolWindow.getContentManager();
         contentManager.removeAllContents(true);
-        Content content = contentManager.getFactory().createContent(createContent(pomInfos), projectName, false);
+        Content content = contentManager.getFactory()
+            .createContent(createContent(), "[" + projectName + "]", false);
         contentManager.addContent(content);
     }
 
     @NotNull
-    private JComponent createContent(@NotNull List<PomInfo> pomInfos)
+    private JComponent createContent()
     {
-        CheckVersionToolbar toolBar = new CheckVersionToolbar();
+        CheckVersionToolbar toolBar = new CheckVersionToolbar(this);
 
-        CheckVersionTable table = new CheckVersionTable(pomInfos);
+        table = new CheckVersionTable(pomInfos);
         table.setSelectionListener(toolBar);
 
         JPanel tablePanel = new JPanel(new BorderLayout());
@@ -127,5 +138,16 @@ public class CheckVersionAction extends AnAction
         panel.add(toolBar, BorderLayout.WEST);
         panel.add(tablePanel, BorderLayout.CENTER);
         return panel;
+    }
+
+    @Override
+    public void upgrade(@NotNull DependencyInfo dependencyInfo)
+    {
+        //todo
+        if (table != null)
+        {
+            pomInfos = findPomInfos(project.getBaseDir());
+            table.update(pomInfos);
+        }
     }
 }

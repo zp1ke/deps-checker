@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class CheckVersionTable extends JBTable
 {
-    private final CheckVersionTableModel model;
+    private CheckVersionTableModel model;
 
     private SelectionListener listener;
 
@@ -40,6 +40,13 @@ public class CheckVersionTable extends JBTable
     public void setSelectionListener(@Nullable SelectionListener listener)
     {
         this.listener = listener;
+    }
+
+    public void update(List<PomInfo> pomInfos)
+    {
+        model = new CheckVersionTableModel(pomInfos);
+        setModel(model);
+        model.fireTableDataChanged();
     }
 
     public interface SelectionListener

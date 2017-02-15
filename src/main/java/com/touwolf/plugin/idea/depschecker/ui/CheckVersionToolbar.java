@@ -1,20 +1,25 @@
 package com.touwolf.plugin.idea.depschecker.ui;
 
+import com.touwolf.plugin.idea.depschecker.ProjectManager;
 import com.touwolf.plugin.idea.depschecker.model.DependencyInfo;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CheckVersionToolbar extends JToolBar implements CheckVersionTable.SelectionListener, ActionListener
 {
+    private final ProjectManager manager;
+
     private DependencyInfo dependencyInfo;
 
     private JButton upgradeButton;
 
-    public CheckVersionToolbar()
+    public CheckVersionToolbar(@NotNull ProjectManager manager)
     {
         super(SwingConstants.VERTICAL);
+        this.manager = manager;
         setFloatable(false);
         setRollover(true);
         upgradeButton = new JButton("UPGRADE");
@@ -35,8 +40,9 @@ public class CheckVersionToolbar extends JToolBar implements CheckVersionTable.S
     {
         if (dependencyInfo != null && dependencyInfo.canUpgrade())
         {
-            System.out.println("Will upgrade: " + dependencyInfo);
-            //todo
+            //todo: add loading mask
+            manager.upgrade(dependencyInfo);
+            //todo: remove loading mask
         }
     }
 }
