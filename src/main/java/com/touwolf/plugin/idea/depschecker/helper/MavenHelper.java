@@ -1,11 +1,13 @@
 package com.touwolf.plugin.idea.depschecker.helper;
 
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.touwolf.plugin.idea.depschecker.model.DependencyInfo;
 import com.touwolf.plugin.idea.depschecker.model.PomInfo;
 import com.touwolf.plugin.idea.depschecker.rest.RestClient;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.LinkedList;
 import java.util.List;
@@ -161,9 +163,10 @@ public class MavenHelper
                 }
                 if (upgraded)
                 {
-                    Writer fileWriter = new OutputStreamWriter(file.getOutputStream(model));
-                    writer.write(fileWriter, model);
-                    fileWriter.flush();
+                    Writer contentWriter = new StringWriter();
+                    writer.write(contentWriter, model);
+                    contentWriter.flush();
+                    save(file, contentWriter.toString());
                 }
             }
             catch (IOException | XmlPullParserException ex)
@@ -185,5 +188,16 @@ public class MavenHelper
             }
         }
         return false;
+    }
+
+    private static void save(VirtualFile file, String content)
+    {
+        FileDocumentManager fileDocumentManager = FileDocumentManager.getInstance();
+        Document document = fileDocumentManager.getDocument(file);
+        if (document != null)
+        {
+            document.setText(content);
+            fileDocumentManager.saveDocument(document);
+        }
     }
 }
