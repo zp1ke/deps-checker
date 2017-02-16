@@ -10,7 +10,12 @@ targetCompatibility = JavaVersion.VERSION_1_8
 
 intellij {
     version '2016.3.2'
-    pluginName 'Java Dependencies Checker'
+    pluginName 'deps-checker'
+    updateSinceUntilBuild false
+    publish {
+        username 'miche_atucha'
+        password 'xxxxxxxxxxxx'
+    }
 }
 
 group 'com.touwolf.plugin.idea.depschecker'
