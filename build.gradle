@@ -15,8 +15,8 @@ intellij {
     updateSinceUntilBuild false
     sandboxDirectory = "${rootProject.rootDir}/idea-sandbox"
     publish {
-        username publishUsername
-        password publishPassword
+        username hasProperty('publishUsername') ? publishUsername : ''
+        password hasProperty('publishPassword') ? publishPassword : ''
     }
 }
 
