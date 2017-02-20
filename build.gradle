@@ -2,6 +2,7 @@ plugins {
     id "org.jetbrains.intellij" version "0.1.10"
 }
 
+apply plugin: 'idea'
 apply plugin: 'org.jetbrains.intellij'
 apply plugin: 'java'
 
@@ -9,17 +10,18 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 intellij {
-    version '2016.3.2'
+    version 'IC-2016.3'
     pluginName 'deps-checker'
     updateSinceUntilBuild false
+    sandboxDirectory = "${rootProject.rootDir}/idea-sandbox"
     publish {
-        username 'miche_atucha'
-        password 'xxxxxxxxxxxx'
+        username publishUsername
+        password publishPassword
     }
 }
 
 group 'com.touwolf.plugin.idea.depschecker'
-version '0.1.0'
+version '0.1.1'
 
 repositories {
     mavenCentral()

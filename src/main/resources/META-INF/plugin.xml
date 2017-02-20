@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>touwolf.depschecker</id>
     <name>Java Dependencies Checker</name>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
     <vendor email="miche.atucha@gmail.com"
             url="https://github.com/miche-atucha/deps-checker">Touwolf</vendor>
 
@@ -13,7 +13,7 @@
         Initial version.
     ]]></change-notes>
 
-    <idea-version since-build="2016.3.2"/>
+    <idea-version since-build="2016.3"/>
 
     <extensions defaultExtensionNs="com.intellij">
     </extensions>
