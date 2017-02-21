@@ -25,7 +25,8 @@ public class DependencyInfo extends BaseInfo
 
     public boolean canUpgrade()
     {
-        return !Objects.equals(latestVersion, getVersion());
+        return !MavenHelper.UNKNOWN_VERSION.equals(latestVersion)
+            && !Objects.equals(latestVersion, getVersion());
     }
 
     @Nullable

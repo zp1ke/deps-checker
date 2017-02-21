@@ -12,7 +12,6 @@ targetCompatibility = JavaVersion.VERSION_1_8
 intellij {
     version '2016.3'
     pluginName 'deps-checker'
-    updateSinceUntilBuild false
     sandboxDirectory = "${rootProject.rootDir}/idea-sandbox"
     publish {
         username hasProperty('publishUsername') ? publishUsername : ''

@@ -28,6 +28,8 @@ public class MavenHelper
 
     private static final String MAVEN_API_URL = "http://search.maven.org/solrsearch/select?q=g:\"GROUP\"+AND+a:\"ARTIFACT\"&rows=5&wt=json";
 
+    public static final String UNKNOWN_VERSION = "?";
+
     @NotNull
     public static String findLatestVersion(@NotNull String groupId, @NotNull String artifactId)
     {
@@ -49,7 +51,7 @@ public class MavenHelper
                 }
             }
         }
-        return "?";
+        return UNKNOWN_VERSION;
     }
 
     @SuppressWarnings("unchecked")
