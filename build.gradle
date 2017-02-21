@@ -10,7 +10,7 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 intellij {
-    version 'IC-2016.3'
+    version '2016.3'
     pluginName 'deps-checker'
     updateSinceUntilBuild false
     sandboxDirectory = "${rootProject.rootDir}/idea-sandbox"
@@ -21,7 +21,7 @@ intellij {
 }
 
 group 'com.touwolf.plugin.idea.depschecker'
-version '0.1.1'
+version '0.1.2'
 
 repositories {
     mavenCentral()
