@@ -14,8 +14,8 @@ intellij {
     pluginName 'deps-checker'
     sandboxDirectory = "${rootProject.rootDir}/idea-sandbox"
     publish {
-        username hasProperty('publishUsername') ? publishUsername : ''
-        password hasProperty('publishPassword') ? publishPassword : ''
+        username project.hasProperty('publishUsername') ? project.property('publishUsername') : ''
+        password project.hasProperty('publishPassword') ? project.property('publishPassword') : ''
     }
 }
 
