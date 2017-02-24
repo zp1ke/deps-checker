@@ -5,5 +5,10 @@ import org.jetbrains.annotations.NotNull;
 
 public interface ProjectManager
 {
-    void upgrade(@NotNull DependencyInfo dependencyInfo);
+    void upgrade(@NotNull DependencyInfo dependencyInfo, @NotNull Listener listener);
+
+    interface Listener
+    {
+        void upgradeDone(@NotNull DependencyInfo dependencyInfo);
+    }
 }

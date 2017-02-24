@@ -11,11 +11,11 @@ public class CheckVersionCellRenderer extends NodeRenderer
     public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus)
     {
         super.customizeCellRenderer(tree, value, selected, expanded, leaf, row, hasFocus);
-        setIcon(PlatformIcons.FOLDER_ICON);
+        setIcon(PlatformIcons.PACKAGE_ICON);
         if (CheckVersionTreeNode.class.isAssignableFrom(value.getClass()))
         {
             CheckVersionTreeNode node = (CheckVersionTreeNode) value;
-            String appendText = "  (" + node.getVersion() + ")";
+            String extraAppend = null;
             SimpleTextAttributes textAttr = SimpleTextAttributes.GRAY_ATTRIBUTES;
             if (node.isPom())
             {
@@ -23,15 +23,20 @@ public class CheckVersionCellRenderer extends NodeRenderer
             }
             else if (node.isDependency())
             {
-                setIcon(Icons.DEPENDENCY);
+                setIcon(PlatformIcons.LIBRARY_ICON);
                 String upgradeVersion = node.getToUpgradeVersion();
                 if (upgradeVersion != null)
                 {
-                    appendText = "  (" + upgradeVersion + ")";
                     textAttr = SimpleTextAttributes.ERROR_ATTRIBUTES;
+                    extraAppend = "Can upgrade to " + upgradeVersion;
                 }
             }
-            append(appendText, textAttr);
+            append("  (" + node.getVersion() + ")", textAttr);
+            if (extraAppend != null)
+            {
+                setToolTipText(extraAppend);
+                append("  " + extraAppend, SimpleTextAttributes.GRAY_ATTRIBUTES);
+            }
         }
     }
 }

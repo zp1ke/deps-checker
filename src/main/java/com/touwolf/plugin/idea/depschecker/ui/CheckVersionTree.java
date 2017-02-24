@@ -1,6 +1,7 @@
 package com.touwolf.plugin.idea.depschecker.ui;
 
 import com.intellij.openapi.vfs.VirtualFile;
+import com.touwolf.plugin.idea.depschecker.ProjectManager;
 import com.touwolf.plugin.idea.depschecker.helper.MavenHelper;
 import com.touwolf.plugin.idea.depschecker.model.DependencyInfo;
 import com.touwolf.plugin.idea.depschecker.model.PomInfo;
@@ -21,6 +22,14 @@ public class CheckVersionTree
 
     private JTree tree;
 
+    private ProjectManager manager;
+
+    private DependencyInfo selectedDependency;
+
+    private VirtualFile baseDir;
+
+    private boolean upgrading;
+
     public JPanel getPanel()
     {
         return panel;
@@ -28,13 +37,20 @@ public class CheckVersionTree
 
     public void updateUI(VirtualFile baseDir)
     {
-        //todo: set status initializing
+        this.baseDir = baseDir;
+        updateUI("Initializing...");
+    }
+
+    private void updateUI(String message)
+    {
+        setStatus(message, true);
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("Projects");
         DefaultTreeModel model = new DefaultTreeModel(root);
         tree.setModel(model);
+        upgrading = false;
         SwingUtilities.invokeLater(() ->
         {
-            //todo: set status loading
+            setStatus("Loading projects...", true);
             List<PomInfo> pomInfos = MavenHelper.findPomInfos(baseDir);
             updateTree(model, root, pomInfos);
         });
@@ -55,7 +71,42 @@ public class CheckVersionTree
             root.add(pomNode);
             model.reload(root);
         });
-        //todo: set status loaded dependencies
+        setStatus("Loaded dependencies.", false);
+        configListeners();
+    }
+
+    private void configListeners()
+    {
+        tree.getSelectionModel().addTreeSelectionListener(e ->
+        {
+            if (!upgrading)
+            {
+                upgrade.setEnabled(false);
+                Object node = tree.getLastSelectedPathComponent();
+                selectedDependency = null;
+                if (node != null && node instanceof CheckVersionTreeNode)
+                {
+                    CheckVersionTreeNode treeNode = (CheckVersionTreeNode) node;
+                    boolean canUpgrade = treeNode.isDependency() && treeNode.getToUpgradeVersion() != null;
+                    upgrade.setEnabled(canUpgrade);
+                    if (canUpgrade)
+                    {
+                        selectedDependency = treeNode.getDependency();
+                    }
+                }
+            }
+        });
+        upgrade.addActionListener(e ->
+        {
+            upgrade.setEnabled(false);
+            upgrading = true;
+            if (manager != null && selectedDependency != null)
+            {
+                String groupArtifact = selectedDependency.getGroupId() + ":" + selectedDependency.getArtifactId();
+                setStatus("Upgrading " + groupArtifact + "...", true);
+                manager.upgrade(selectedDependency, dependencyInfo -> updateUI("Upgraded " + groupArtifact + ". Reloading..."));
+            }
+        });
     }
 
     private CheckVersionTreeNode createPomNode(PomInfo pomInfo)
@@ -87,5 +138,15 @@ public class CheckVersionTree
             return depsNode;
         }
         return null;
+    }
+
+    private void setStatus(String message, boolean loadIndicator)
+    {
+        //todo
+    }
+
+    public void setManager(ProjectManager manager)
+    {
+        this.manager = manager;
     }
 }

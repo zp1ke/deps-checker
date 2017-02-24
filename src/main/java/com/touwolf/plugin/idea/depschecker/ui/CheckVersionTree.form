@@ -8,8 +8,9 @@
     <border type="none"/>
     <children>
       <toolbar id="d013e" binding="toolbar">
-        <constraints border-constraint="East"/>
+        <constraints border-constraint="West"/>
         <properties>
+          <borderPainted value="false"/>
           <floatable value="false"/>
           <orientation value="1"/>
         </properties>
@@ -18,9 +19,14 @@
           <component id="f69f2" class="javax.swing.JButton" binding="upgrade">
             <constraints/>
             <properties>
+              <enabled value="false"/>
+              <hideActionText value="false"/>
               <horizontalAlignment value="0"/>
               <horizontalTextPosition value="0"/>
-              <text value="Upgrade"/>
+              <icon value="icon/upgrade.png"/>
+              <rolloverEnabled value="false"/>
+              <text value=""/>
+              <toolTipText value="Upgrade selected dependency"/>
               <verticalAlignment value="0"/>
               <verticalTextPosition value="0"/>
             </properties>

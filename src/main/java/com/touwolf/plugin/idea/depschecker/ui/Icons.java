@@ -5,9 +5,7 @@ import javax.swing.*;
 
 public interface Icons
 {
-    Icon LOGO = IconLoader.getIcon("/icon/deps.png");
+    Icon LOGO = IconLoader.getIcon("/icon/logo.png");
 
     Icon MAVEN = IconLoader.getIcon("/icon/maven.png");
-
-    Icon DEPENDENCY = IconLoader.getIcon("/icon/dependency.png");
 }

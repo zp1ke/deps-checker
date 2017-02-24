@@ -42,4 +42,13 @@ public class CheckVersionTreeNode extends DefaultMutableTreeNode
         }
         return null;
     }
+
+    public DependencyInfo getDependency()
+    {
+        if (isDependency())
+        {
+            return (DependencyInfo) this.info;
+        }
+        return null;
+    }
 }

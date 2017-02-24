@@ -62,12 +62,13 @@ public class CheckVersionAction extends AnAction implements ProjectManager
         {
             treeComponent = new CheckVersionTree();
         }
+        treeComponent.setManager(this);
         treeComponent.updateUI(project.getBaseDir());
         return treeComponent.getPanel();
     }
 
     @Override
-    public void upgrade(@NotNull DependencyInfo dependencyInfo)
+    public void upgrade(@NotNull DependencyInfo dependencyInfo, @NotNull Listener listener)
     {
         if (upgrading)
         {
@@ -77,13 +78,7 @@ public class CheckVersionAction extends AnAction implements ProjectManager
         WriteCommandAction.runWriteCommandAction(project, () ->
         {
             MavenHelper.upgradeDependency(project.getBaseDir(), dependencyInfo);
-            /*
-            if (table != null)
-            {
-                pomInfos = MavenHelper.findPomInfos(project.getBaseDir());
-                table.update(pomInfos);
-            }
-            */
+            listener.upgradeDone(dependencyInfo);
             upgrading = false;
         });
     }
