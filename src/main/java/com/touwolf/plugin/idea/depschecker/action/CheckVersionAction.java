@@ -47,7 +47,7 @@ public class CheckVersionAction extends AnAction implements ProjectManager
 
     private void updateContent(ToolWindow toolWindow, String projectName)
     {
-        toolWindow.setIcon(Icons.DEPS);
+        toolWindow.setIcon(Icons.LOGO);
         ContentManager contentManager = toolWindow.getContentManager();
         contentManager.removeAllContents(true);
         Content content = contentManager.getFactory()
