@@ -12,12 +12,8 @@ import com.intellij.ui.content.ContentManager;
 import com.touwolf.plugin.idea.depschecker.ProjectManager;
 import com.touwolf.plugin.idea.depschecker.helper.MavenHelper;
 import com.touwolf.plugin.idea.depschecker.model.DependencyInfo;
-import com.touwolf.plugin.idea.depschecker.model.PomInfo;
-import com.touwolf.plugin.idea.depschecker.ui.CheckVersionTable;
-import com.touwolf.plugin.idea.depschecker.ui.CheckVersionToolbar;
+import com.touwolf.plugin.idea.depschecker.ui.CheckVersionTree;
 import com.touwolf.plugin.idea.depschecker.ui.Icons;
-import java.awt.*;
-import java.util.List;
 import javax.swing.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,13 +21,11 @@ public class CheckVersionAction extends AnAction implements ProjectManager
 {
     private static final String TOOL_WINDOW_ID = "Check dependencies version";
 
-    private CheckVersionTable table;
-
-    private List<PomInfo> pomInfos;
-
     private Project project;
 
     private boolean upgrading = false;
+
+    private CheckVersionTree treeComponent;
 
     @Override
     public void actionPerformed(AnActionEvent event)
@@ -41,7 +35,6 @@ public class CheckVersionAction extends AnAction implements ProjectManager
         {
             return;
         }
-        pomInfos = MavenHelper.findPomInfos(project.getBaseDir());
         ToolWindowManager toolWindowMgr = ToolWindowManager.getInstance(project);
         ToolWindow tw = toolWindowMgr.getToolWindow(TOOL_WINDOW_ID);
         if (tw == null)
@@ -65,19 +58,12 @@ public class CheckVersionAction extends AnAction implements ProjectManager
     @NotNull
     private JComponent createContent()
     {
-        CheckVersionToolbar toolBar = new CheckVersionToolbar(this);
-
-        table = new CheckVersionTable(pomInfos);
-        table.setSelectionListener(toolBar);
-
-        JPanel tablePanel = new JPanel(new BorderLayout());
-        tablePanel.add(table.getTableHeader(), BorderLayout.PAGE_START);
-        tablePanel.add(table, BorderLayout.CENTER);
-
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(toolBar, BorderLayout.WEST);
-        panel.add(tablePanel, BorderLayout.CENTER);
-        return panel;
+        if (treeComponent == null)
+        {
+            treeComponent = new CheckVersionTree();
+        }
+        treeComponent.updateUI(project.getBaseDir());
+        return treeComponent.getPanel();
     }
 
     @Override
@@ -91,11 +77,13 @@ public class CheckVersionAction extends AnAction implements ProjectManager
         WriteCommandAction.runWriteCommandAction(project, () ->
         {
             MavenHelper.upgradeDependency(project.getBaseDir(), dependencyInfo);
+            /*
             if (table != null)
             {
                 pomInfos = MavenHelper.findPomInfos(project.getBaseDir());
                 table.update(pomInfos);
             }
+            */
             upgrading = false;
         });
     }
