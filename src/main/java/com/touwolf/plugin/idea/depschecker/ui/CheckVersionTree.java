@@ -1,5 +1,6 @@
 package com.touwolf.plugin.idea.depschecker.ui;
 
+import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.touwolf.plugin.idea.depschecker.ProjectManager;
 import com.touwolf.plugin.idea.depschecker.helper.MavenHelper;
@@ -26,6 +27,8 @@ public class CheckVersionTree
 
     private JButton reload;
 
+    private JLabel status;
+
     private ProjectManager manager;
 
     private DependencyInfo selectedDependency;
@@ -45,6 +48,7 @@ public class CheckVersionTree
         tree.setCellRenderer(new CheckVersionCellRenderer());
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         Color borderColor = new Color(46, 45, 45);
+        status.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, borderColor));
         Border outBorder = BorderFactory.createMatteBorder(0, 1, 0, 0, borderColor);
         Border inBorder = BorderFactory.createEmptyBorder(5, 5, 0, 0);
         tree.setBorder(BorderFactory.createCompoundBorder(outBorder, inBorder));
@@ -53,14 +57,14 @@ public class CheckVersionTree
 
     private void updateUI(String message)
     {
-        setStatus(message, true);
+        setStatus(message, 0);
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("Projects");
         DefaultTreeModel model = new DefaultTreeModel(root);
         tree.setModel(model);
         upgrading = false;
         SwingUtilities.invokeLater(() ->
         {
-            setStatus("Loading projects...", true);
+            setStatus("Loading projects...", 0);
             List<PomInfo> pomInfos = MavenHelper.findPomInfos(baseDir);
             updateTree(model, root, pomInfos);
         });
@@ -79,7 +83,7 @@ public class CheckVersionTree
             root.add(pomNode);
             model.reload(root);
         });
-        setStatus("Loaded dependencies.", false);
+        setStatus("Loaded dependencies.", 2000L);
         configListeners();
     }
 
@@ -111,8 +115,13 @@ public class CheckVersionTree
             if (manager != null && selectedDependency != null)
             {
                 String groupArtifact = selectedDependency.getGroupId() + ":" + selectedDependency.getArtifactId();
-                setStatus("Upgrading " + groupArtifact + "...", true);
-                manager.upgrade(selectedDependency, dependencyInfo -> updateUI("Upgraded " + groupArtifact + ". Reloading..."));
+                setStatus("Upgrading " + groupArtifact + "...", 0);
+                manager.upgrade(selectedDependency, dependencyInfo ->
+                {
+                    String message = "Upgraded " + groupArtifact + ". Reloading...";
+                    manager.notifyByBallon(message, MessageType.INFO);
+                    updateUI(message);
+                });
             }
         });
         reload.addActionListener(e ->
@@ -154,9 +163,25 @@ public class CheckVersionTree
         return null;
     }
 
-    private void setStatus(String message, boolean loadIndicator)
+    private void setStatus(String message, long millis)
     {
-        //todo
+        boolean visible = message != null;
+        status.setVisible(visible);
+        status.setText(visible ? message : "");
+        if (millis > 0)
+        {
+            new Thread(() ->
+            {
+                try
+                {
+                    Thread.sleep(millis);
+                }
+                catch (InterruptedException ignored)
+                {
+                }
+                SwingUtilities.invokeLater(() -> setStatus(null, 0));
+            }).start();
+        }
     }
 
     public void setManager(ProjectManager manager)

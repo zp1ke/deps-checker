@@ -3,7 +3,9 @@ package com.touwolf.plugin.idea.depschecker.action;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
@@ -20,6 +22,8 @@ import org.jetbrains.annotations.NotNull;
 public class CheckVersionAction extends AnAction implements ProjectManager
 {
     private static final String TOOL_WINDOW_ID = "Check dependencies version";
+
+    private static final Logger LOG = Logger.getInstance(CheckVersionAction.class);
 
     private Project project;
 
@@ -81,5 +85,24 @@ public class CheckVersionAction extends AnAction implements ProjectManager
             listener.upgradeDone(dependencyInfo);
             upgrading = false;
         });
+    }
+
+    @Override
+    public void notifyByBallon(String message, MessageType type)
+    {
+        ToolWindowManager toolWindowMgr = ToolWindowManager.getInstance(project);
+        toolWindowMgr.notifyByBalloon(TOOL_WINDOW_ID, type, message);
+        if (MessageType.ERROR.equals(type))
+        {
+            LOG.error(message);
+        }
+        else if (MessageType.WARNING.equals(type))
+        {
+            LOG.warn(message);
+        }
+        else if (MessageType.INFO.equals(type))
+        {
+            LOG.info(message);
+        }
     }
 }

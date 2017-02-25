@@ -69,6 +69,19 @@
           </component>
         </children>
       </scrollpane>
+      <component id="33c23" class="javax.swing.JLabel" binding="status">
+        <constraints border-constraint="North"/>
+        <properties>
+          <focusable value="false"/>
+          <horizontalAlignment value="0"/>
+          <horizontalTextPosition value="0"/>
+          <maximumSize width="1000" height="20"/>
+          <minimumSize width="74" height="20"/>
+          <preferredSize width="74" height="20"/>
+          <text value="Dependencies"/>
+          <visible value="false"/>
+        </properties>
+      </component>
     </children>
   </grid>
 </form>
