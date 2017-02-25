@@ -5,9 +5,11 @@ import com.touwolf.plugin.idea.depschecker.ProjectManager;
 import com.touwolf.plugin.idea.depschecker.helper.MavenHelper;
 import com.touwolf.plugin.idea.depschecker.model.DependencyInfo;
 import com.touwolf.plugin.idea.depschecker.model.PomInfo;
+import java.awt.*;
 import java.util.Collection;
 import java.util.List;
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
@@ -21,6 +23,8 @@ public class CheckVersionTree
     private JButton upgrade;
 
     private JTree tree;
+
+    private JButton reload;
 
     private ProjectManager manager;
 
@@ -38,6 +42,12 @@ public class CheckVersionTree
     public void updateUI(VirtualFile baseDir)
     {
         this.baseDir = baseDir;
+        tree.setCellRenderer(new CheckVersionCellRenderer());
+        tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        Color borderColor = new Color(46, 45, 45);
+        Border outBorder = BorderFactory.createMatteBorder(0, 1, 0, 0, borderColor);
+        Border inBorder = BorderFactory.createEmptyBorder(5, 5, 0, 0);
+        tree.setBorder(BorderFactory.createCompoundBorder(outBorder, inBorder));
         updateUI("Initializing...");
     }
 
@@ -63,8 +73,6 @@ public class CheckVersionTree
             SwingUtilities.invokeLater(() -> updateTree(model, root, pomInfos));
             return;
         }
-        tree.setCellRenderer(new CheckVersionCellRenderer());
-        tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         pomInfos.forEach(pomInfo ->
         {
             CheckVersionTreeNode pomNode = createPomNode(pomInfo);
@@ -106,6 +114,12 @@ public class CheckVersionTree
                 setStatus("Upgrading " + groupArtifact + "...", true);
                 manager.upgrade(selectedDependency, dependencyInfo -> updateUI("Upgraded " + groupArtifact + ". Reloading..."));
             }
+        });
+        reload.addActionListener(e ->
+        {
+            upgrade.setEnabled(false);
+            upgrading = true;
+            updateUI("Reloading...");
         });
     }
 

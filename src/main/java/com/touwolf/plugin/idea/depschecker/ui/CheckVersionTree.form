@@ -10,20 +10,25 @@
       <toolbar id="d013e" binding="toolbar">
         <constraints border-constraint="West"/>
         <properties>
-          <borderPainted value="false"/>
+          <borderPainted value="true"/>
           <floatable value="false"/>
           <orientation value="1"/>
+          <rollover value="false"/>
         </properties>
-        <border type="none"/>
+        <clientProperties>
+          <JToolBar.isRollover class="java.lang.Boolean" value="false"/>
+        </clientProperties>
+        <border type="empty"/>
         <children>
           <component id="f69f2" class="javax.swing.JButton" binding="upgrade">
             <constraints/>
             <properties>
+              <borderPainted value="false"/>
               <enabled value="false"/>
               <hideActionText value="false"/>
               <horizontalAlignment value="0"/>
               <horizontalTextPosition value="0"/>
-              <icon value="icon/upgrade.png"/>
+              <icon value="actions/moveUp.png"/>
               <rolloverEnabled value="false"/>
               <text value=""/>
               <toolTipText value="Upgrade selected dependency"/>
@@ -31,12 +36,27 @@
               <verticalTextPosition value="0"/>
             </properties>
           </component>
+          <component id="fdec" class="javax.swing.JButton" binding="reload">
+            <constraints/>
+            <properties>
+              <borderPainted value="false"/>
+              <horizontalTextPosition value="0"/>
+              <icon value="actions/refresh.png"/>
+              <text value=""/>
+              <toolTipText value="Reload dependencies"/>
+            </properties>
+          </component>
         </children>
       </toolbar>
       <scrollpane id="8efbe">
         <constraints border-constraint="Center"/>
-        <properties/>
-        <border type="none"/>
+        <properties>
+          <visible value="true"/>
+        </properties>
+        <border type="empty">
+          <size top="0" left="0" bottom="0" right="0"/>
+          <color color="-16448251"/>
+        </border>
         <children>
           <component id="c2b6" class="javax.swing.JTree" binding="tree">
             <constraints/>
