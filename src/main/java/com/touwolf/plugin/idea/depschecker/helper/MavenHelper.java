@@ -87,7 +87,7 @@ public class MavenHelper
     public static List<PomInfo> findPomInfos(@NotNull VirtualFile baseDir)
     {
         List<PomInfo> poms = new LinkedList<>();
-        List<VirtualFile> pomFiles = findPomFiles(baseDir);
+        List<VirtualFile> pomFiles = VirtualFileHelper.findFiles(baseDir, "pom.xml");
         pomFiles.forEach(pomFile ->
         {
             PomInfo pom = parsePom(pomFile);
@@ -96,29 +96,6 @@ public class MavenHelper
                 poms.add(pom);
             }
         });
-        return poms;
-    }
-
-    @NotNull
-    private static List<VirtualFile> findPomFiles(@NotNull VirtualFile baseDir)
-    {
-        List<VirtualFile> poms = new LinkedList<>();
-        if (!baseDir.isDirectory() || baseDir.getName().startsWith("."))
-        {
-            return poms;
-        }
-        VirtualFile[] children = baseDir.getChildren();
-        for (VirtualFile child : children)
-        {
-            if (child.isDirectory())
-            {
-                poms.addAll(findPomFiles(child));
-            }
-            else if (!child.isDirectory() && "pom.xml".equals(child.getName()))
-            {
-                poms.add(child);
-            }
-        }
         return poms;
     }
 
@@ -150,7 +127,7 @@ public class MavenHelper
 
     public static void upgradeDependency(@NotNull VirtualFile baseDir, @NotNull DependencyInfo dependencyInfo)
     {
-        List<VirtualFile> pomFiles = findPomFiles(baseDir);
+        List<VirtualFile> pomFiles = VirtualFileHelper.findFiles(baseDir, "pom.xml");
         MavenXpp3Reader reader = new MavenXpp3Reader();
         MavenXpp3Writer writer = new MavenXpp3Writer();
         pomFiles.forEach(file ->

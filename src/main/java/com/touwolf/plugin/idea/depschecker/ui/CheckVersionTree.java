@@ -3,8 +3,10 @@ package com.touwolf.plugin.idea.depschecker.ui;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.touwolf.plugin.idea.depschecker.ProjectManager;
+import com.touwolf.plugin.idea.depschecker.helper.GradleHelper;
 import com.touwolf.plugin.idea.depschecker.helper.MavenHelper;
 import com.touwolf.plugin.idea.depschecker.model.DependencyInfo;
+import com.touwolf.plugin.idea.depschecker.model.GradleInfo;
 import com.touwolf.plugin.idea.depschecker.model.PomInfo;
 import java.awt.*;
 import java.util.Collection;
@@ -19,6 +21,7 @@ public class CheckVersionTree
 {
     private JPanel panel;
 
+    @SuppressWarnings("unused")
     private JToolBar toolbar;
 
     private JButton upgrade;
@@ -66,21 +69,29 @@ public class CheckVersionTree
         {
             setStatus("Loading projects...", 0);
             List<PomInfo> pomInfos = MavenHelper.findPomInfos(baseDir);
-            updateTree(model, root, pomInfos);
+            List<GradleInfo> gradleInfos = GradleHelper.findGradleInfos(baseDir);
+            updateTree(model, root, pomInfos, gradleInfos);
         });
     }
 
-    private void updateTree(DefaultTreeModel model, DefaultMutableTreeNode root, List<PomInfo> pomInfos)
+    private void updateTree(DefaultTreeModel model, DefaultMutableTreeNode root,
+                            List<PomInfo> pomInfos, List<GradleInfo> gradleInfos)
     {
         if (!SwingUtilities.isEventDispatchThread())
         {
-            SwingUtilities.invokeLater(() -> updateTree(model, root, pomInfos));
+            SwingUtilities.invokeLater(() -> updateTree(model, root, pomInfos, gradleInfos));
             return;
         }
         pomInfos.forEach(pomInfo ->
         {
             CheckVersionTreeNode pomNode = createPomNode(pomInfo);
             root.add(pomNode);
+            model.reload(root);
+        });
+        gradleInfos.forEach(gradleInfo ->
+        {
+            CheckVersionTreeNode gradleNode = createGradleNode(gradleInfo);
+            root.add(gradleNode);
             model.reload(root);
         });
         setStatus("Loaded dependencies.", 2000L);
@@ -146,6 +157,17 @@ public class CheckVersionTree
             pomNode.add(depsNode);
         }
         return pomNode;
+    }
+
+    private CheckVersionTreeNode createGradleNode(GradleInfo gradleInfo)
+    {
+        CheckVersionTreeNode gradleNode = new CheckVersionTreeNode(gradleInfo);
+        DefaultMutableTreeNode depsNode = createDependenciesNode(gradleInfo.getDependencies(), "Dependencies");
+        if (depsNode != null)
+        {
+            gradleNode.add(depsNode);
+        }
+        return gradleNode;
     }
 
     private DefaultMutableTreeNode createDependenciesNode(Collection<DependencyInfo> dependencyInfos, String name)

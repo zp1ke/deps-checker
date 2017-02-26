@@ -1,7 +1,6 @@
 <idea-plugin version="3">
     <id>touwolf.depschecker</id>
     <name>Java Dependencies Checker</name>
-    <version>0.1.4</version>
     <vendor email="miche.atucha@gmail.com"
             url="https://github.com/miche-atucha/deps-checker">Touwolf</vendor>
 
@@ -10,7 +9,14 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        Initial version.
+        <b>v0.1.x</b>
+        <ul>
+            <li><a href="https://maven.apache.org/" target="_blank">Maven</a> support</li>
+        </ul>
+        <b>v0.2.x</b>
+        <ul>
+            <li><a href="https://gradle.org/" target="_blank">Gradle</a> support</li>
+        </ul>
     ]]></change-notes>
 
     <depends>com.intellij.modules.java</depends>

@@ -21,6 +21,10 @@ public class CheckVersionCellRenderer extends NodeRenderer
             {
                 setIcon(Icons.MAVEN);
             }
+            else if (node.isGradle())
+            {
+                setIcon(Icons.GRADLE);
+            }
             else if (node.isDependency())
             {
                 setIcon(PlatformIcons.LIBRARY_ICON);

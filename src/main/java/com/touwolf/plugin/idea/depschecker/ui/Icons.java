@@ -8,4 +8,6 @@ public interface Icons
     Icon LOGO = IconLoader.getIcon("/icon/logo.png");
 
     Icon MAVEN = IconLoader.getIcon("/icon/maven.png");
+
+    Icon GRADLE = IconLoader.getIcon("/icon/gradle.png");
 }
