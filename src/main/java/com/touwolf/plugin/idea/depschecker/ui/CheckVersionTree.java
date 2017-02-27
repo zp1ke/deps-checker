@@ -82,19 +82,26 @@ public class CheckVersionTree
             SwingUtilities.invokeLater(() -> updateTree(model, root, pomInfos, gradleInfos));
             return;
         }
-        pomInfos.forEach(pomInfo ->
+        if (!pomInfos.isEmpty() || !gradleInfos.isEmpty())
         {
-            CheckVersionTreeNode pomNode = createPomNode(pomInfo);
-            root.add(pomNode);
-            model.reload(root);
-        });
-        gradleInfos.forEach(gradleInfo ->
+            pomInfos.forEach(pomInfo ->
+            {
+                CheckVersionTreeNode pomNode = createPomNode(pomInfo);
+                root.add(pomNode);
+                model.reload(root);
+            });
+            gradleInfos.forEach(gradleInfo ->
+            {
+                CheckVersionTreeNode gradleNode = createGradleNode(gradleInfo);
+                root.add(gradleNode);
+                model.reload(root);
+            });
+            setStatus("Loaded dependencies.", 2000L);
+        }
+        else
         {
-            CheckVersionTreeNode gradleNode = createGradleNode(gradleInfo);
-            root.add(gradleNode);
-            model.reload(root);
-        });
-        setStatus("Loaded dependencies.", 2000L);
+            setStatus("No projects founded!", 0);
+        }
         configListeners();
     }
 

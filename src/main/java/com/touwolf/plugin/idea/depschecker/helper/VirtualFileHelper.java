@@ -4,8 +4,10 @@ import com.intellij.openapi.vfs.VirtualFile;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
 public class VirtualFileHelper
@@ -13,24 +15,8 @@ public class VirtualFileHelper
     @NotNull
     public static List<VirtualFile> findFiles(@NotNull VirtualFile baseDir, @NotNull String filter)
     {
-        List<VirtualFile> files = new LinkedList<>();
-        if (!baseDir.isDirectory() || baseDir.getName().startsWith("."))
-        {
-            return files;
-        }
-        VirtualFile[] children = baseDir.getChildren();
-        for (VirtualFile child : children)
-        {
-            if (child.isDirectory())
-            {
-                files.addAll(findFiles(child, filter));
-            }
-            else if (!child.isDirectory() && filter.equals(child.getName()))
-            {
-                files.add(child);
-            }
-        }
-        return files;
+        Map<String, VirtualFile> mapFiles = findMapFiles(baseDir, filter);
+        return new LinkedList<>(mapFiles.values());
     }
 
     @NotNull
@@ -46,5 +32,37 @@ public class VirtualFileHelper
             line = bufReader.readLine();
         }
         return builder.toString();
+    }
+
+    @NotNull
+    public static Map<String, VirtualFile> findMapFiles(@NotNull VirtualFile baseDir, @NotNull String filter)
+    {
+        return findMapFiles(baseDir, filter, "");
+    }
+
+    @NotNull
+    private static Map<String, VirtualFile> findMapFiles(@NotNull VirtualFile baseDir,
+                                                         @NotNull String filter,
+                                                         @NotNull String path)
+    {
+        Map<String, VirtualFile> files = new HashMap<>();
+        if (!baseDir.isDirectory() || baseDir.getName().startsWith("."))
+        {
+            return files;
+        }
+        VirtualFile[] children = baseDir.getChildren();
+        String currentPath = path.isEmpty() ? baseDir.getName() : path + "/" + baseDir.getName();
+        for (VirtualFile child : children)
+        {
+            if (child.isDirectory())
+            {
+                files.putAll(findMapFiles(child, filter, currentPath));
+            }
+            else if (!child.isDirectory() && filter.equals(child.getName()))
+            {
+                files.put(currentPath, child);
+            }
+        }
+        return files;
     }
 }

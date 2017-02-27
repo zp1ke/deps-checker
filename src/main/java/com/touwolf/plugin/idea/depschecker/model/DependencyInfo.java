@@ -4,6 +4,10 @@ import com.touwolf.plugin.idea.depschecker.helper.MavenHelper;
 import java.util.Objects;
 import java.util.Properties;
 import org.apache.maven.model.Dependency;
+import org.codehaus.groovy.ast.expr.Expression;
+import org.codehaus.groovy.ast.expr.MapEntryExpression;
+import org.codehaus.groovy.ast.expr.NamedArgumentListExpression;
+import org.codehaus.groovy.ast.expr.TupleExpression;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,6 +49,44 @@ public class DependencyInfo extends BaseInfo
         String artifactId = dependency.getArtifactId();
         String lastVersion = MavenHelper.findLatestVersion(groupId, artifactId);
         return new DependencyInfo(groupId, artifactId, version, lastVersion);
+    }
+
+    @Nullable
+    public static DependencyInfo parse(@NotNull TupleExpression tupleExpr)
+    {
+        for (Expression expr : tupleExpr.getExpressions())
+        {
+            if (expr instanceof NamedArgumentListExpression)
+            {
+                NamedArgumentListExpression map = (NamedArgumentListExpression) expr;
+                String group = null;
+                String name = null;
+                String version = null;
+                for (MapEntryExpression entry : map.getMapEntryExpressions())
+                {
+                    String key = entry.getKeyExpression().getText();
+                    String value = entry.getValueExpression().getText();
+                    if ("group".equals(key))
+                    {
+                        group = value;
+                    }
+                    else if ("name".equals(key))
+                    {
+                        name = value;
+                    }
+                    else if ("version".equals(key))
+                    {
+                        version = value;
+                    }
+                }
+                if (group != null && name != null && version != null)
+                {
+                    String lastVersion = MavenHelper.findLatestVersion(group, name);
+                    return new DependencyInfo(group, name, version, lastVersion);
+                }
+            }
+        }
+        return null;
     }
 
     @Nullable

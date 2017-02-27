@@ -16,14 +16,25 @@ public class CheckVersionCellRenderer extends NodeRenderer
         {
             CheckVersionTreeNode node = (CheckVersionTreeNode) value;
             String extraAppend = null;
+            SimpleTextAttributes extraAttr = SimpleTextAttributes.GRAY_ATTRIBUTES;
             SimpleTextAttributes textAttr = SimpleTextAttributes.GRAY_ATTRIBUTES;
             if (node.isPom())
             {
                 setIcon(Icons.MAVEN);
+                if (node.hasEmptyDependencies())
+                {
+                    extraAppend = "No dependencies founded!";
+                    extraAttr = SimpleTextAttributes.ERROR_ATTRIBUTES;
+                }
             }
             else if (node.isGradle())
             {
                 setIcon(Icons.GRADLE);
+                if (node.hasEmptyDependencies())
+                {
+                    extraAppend = "No dependencies founded!";
+                    extraAttr = SimpleTextAttributes.ERROR_ATTRIBUTES;
+                }
             }
             else if (node.isDependency())
             {
@@ -39,7 +50,7 @@ public class CheckVersionCellRenderer extends NodeRenderer
             if (extraAppend != null)
             {
                 setToolTipText(extraAppend);
-                append("  " + extraAppend, SimpleTextAttributes.GRAY_ATTRIBUTES);
+                append("  " + extraAppend, extraAttr);
             }
         }
     }
