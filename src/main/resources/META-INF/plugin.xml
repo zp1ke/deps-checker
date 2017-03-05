@@ -15,6 +15,7 @@
         </ul>
         <b>v0.2.x</b>
         <ul>
+            <li>Icons changes.</li>
             <li><a href="https://gradle.org/" target="_blank">Gradle</a> support.</li>
         </ul>
     ]]></change-notes>
