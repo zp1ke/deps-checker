@@ -7,20 +7,34 @@ import org.junit.Test;
 public class GradleTests
 {
     @Test
-    public void dependenciesTest()
+    public void formalDependenciesTest()
     {
         String group = "dep.group";
         String name = "dep.name";
         String version = "dep.version";
-        String content = "dependencies {\n" +
-            "   compile group: '" + group + "', name: '" + name + "', version: '" + version + "'\n" +
-            "}";
+        int times = 2;
+        String content = "dependencies {\n";
+        for (int i = 0; i < times; i++)
+        {
+            content += "compile group: '" + group + i + "', name: '" + name + i + "', version: '" + version + i + "'\n";
+        }
+        content += "}";
         GradleBuild build = new GradleBuild(Arrays.asList(content.split("\n")));
-        Assert.assertEquals(1, build.getDependencies().size());
-        GradleDependency dependency = build.getDependencies().get(0);
-        Assert.assertEquals("compile", dependency.getType());
-        Assert.assertEquals(group, dependency.getGroup());
-        Assert.assertEquals(name, dependency.getName());
-        Assert.assertEquals(version, dependency.getVersion());
+        Assert.assertEquals(times, build.getDependencies().size());
+        for (int i = 0; i < times; i++)
+        {
+            GradleDependency dependency = build.getDependencies().get(i);
+            Assert.assertEquals("compile", dependency.getType());
+            Assert.assertEquals(group + i, dependency.getGroup());
+            Assert.assertEquals(name + i, dependency.getName());
+            Assert.assertEquals(version + i, dependency.getVersion());
+        }
+        String newVersion = "new.version";
+        int index = 1;
+        build.upgradeDependency(group + index, name + index, newVersion);
+        String depLine = "compile group: '" + group + index + "', name: '" + name + index + "', version: '" + newVersion + "'";
+        Assert.assertEquals(depLine, build.getContent().get(index + 1));
+        GradleDependency dependency = build.getDependencies().get(index);
+        Assert.assertEquals(newVersion, dependency.getVersion());
     }
 }

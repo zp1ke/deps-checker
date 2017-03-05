@@ -1,5 +1,6 @@
 package com.touwolf.plugin.idea.depschecker.model;
 
+import com.touwolf.plugin.idea.depschecker.gradle.GradleDependency;
 import com.touwolf.plugin.idea.depschecker.helper.MavenHelper;
 import java.util.Objects;
 import java.util.Properties;
@@ -87,6 +88,15 @@ public class DependencyInfo extends BaseInfo
             }
         }
         return null;
+    }
+
+    @NotNull
+    public static DependencyInfo of(@NotNull GradleDependency dependency)
+    {
+        String group = dependency.getGroup();
+        String name = dependency.getName();
+        String lastVersion = MavenHelper.findLatestVersion(group, name);
+        return new DependencyInfo(group, name, dependency.getVersion(), lastVersion);
     }
 
     @Nullable

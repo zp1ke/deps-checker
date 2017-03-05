@@ -1,19 +1,22 @@
 package com.touwolf.plugin.idea.depschecker.gradle;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.*;
 import org.jetbrains.annotations.NotNull;
 
 public class GradleBuild
 {
     private final List<String> content;
 
-    private final List<GradleDependency> dependencies;
+    private final Map<Integer, GradleDependency> dependencies;
 
     public GradleBuild(@NotNull List<String> content)
     {
-        this.content = content;
-        dependencies = new LinkedList<>();
+        this.content = new LinkedList<>(content);
+        dependencies = new HashMap<>();
         initDependencies();
     }
 
@@ -21,6 +24,7 @@ public class GradleBuild
     {
         int startLine = -1;
         int startBlockLine = -1;
+        int opened = 0;
         for (int line = 0; line < content.size(); line++)
         {
             String statement = content.get(line);
@@ -30,13 +34,27 @@ public class GradleBuild
             }
             if (startLine >= 0 && statement.contains("{"))
             {
-                startBlockLine = line;
+                if (startBlockLine < 0)
+                {
+                    startBlockLine = line;
+                }
+                else
+                {
+                    opened++;
+                }
             }
             if (startBlockLine >= 0 && statement.contains("}"))
             {
-                parseDependencies(startBlockLine, line);
-                startLine = -1;
-                startBlockLine = -1;
+                if (opened == 0)
+                {
+                    parseDependencies(startBlockLine, line);
+                    startLine = -1;
+                    startBlockLine = -1;
+                }
+                else
+                {
+                    opened--;
+                }
             }
         }
     }
@@ -48,13 +66,51 @@ public class GradleBuild
             GradleDependency dependency = GradleDependency.of(content.get(line));
             if (dependency != null)
             {
-                dependencies.add(dependency);
+                dependencies.put(line, dependency);
             }
         }
     }
 
+    @NotNull
+    public List<String> getContent()
+    {
+        return Collections.unmodifiableList(content);
+    }
+
+    @NotNull
     public List<GradleDependency> getDependencies()
     {
-        return dependencies;
+        return new LinkedList<>(dependencies.values());
+    }
+
+    public boolean upgradeDependency(@NotNull String group, @NotNull String name, @NotNull String newVersion)
+    {
+        Set<Integer> lines = dependencies.keySet();
+        for (Integer line : lines)
+        {
+            GradleDependency dependency = dependencies.get(line);
+            if (group.equals(dependency.getGroup()) && name.equals(dependency.getName()))
+            {
+                String contentLine = content.remove(line.intValue());
+                contentLine = contentLine.replace(dependency.getVersion(), newVersion);
+                content.add(line, contentLine);
+                dependency.setVersion(newVersion);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static GradleBuild read(InputStream stream) throws IOException
+    {
+        BufferedReader buf = new BufferedReader(new InputStreamReader(stream));
+        List<String> content = new LinkedList<>();
+        String line = buf.readLine();
+        while(line != null)
+        {
+            content.add(line);
+            line = buf.readLine();
+        }
+        return new GradleBuild(content);
     }
 }

@@ -12,6 +12,7 @@ import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
 import com.touwolf.plugin.idea.depschecker.ProjectManager;
+import com.touwolf.plugin.idea.depschecker.helper.GradleHelper;
 import com.touwolf.plugin.idea.depschecker.helper.MavenHelper;
 import com.touwolf.plugin.idea.depschecker.model.DependencyInfo;
 import com.touwolf.plugin.idea.depschecker.ui.CheckVersionTree;
@@ -82,6 +83,7 @@ public class CheckVersionAction extends AnAction implements ProjectManager
         WriteCommandAction.runWriteCommandAction(project, () ->
         {
             MavenHelper.upgradeDependency(project.getBaseDir(), dependencyInfo);
+            GradleHelper.upgradeDependency(project.getBaseDir(), dependencyInfo);
             listener.upgradeDone(dependencyInfo);
             upgrading = false;
         });

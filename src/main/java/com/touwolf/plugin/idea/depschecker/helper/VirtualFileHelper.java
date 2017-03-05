@@ -1,5 +1,7 @@
 package com.touwolf.plugin.idea.depschecker.helper;
 
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -64,5 +66,16 @@ public class VirtualFileHelper
             }
         }
         return files;
+    }
+
+    public static void save(VirtualFile file, String content)
+    {
+        FileDocumentManager fileDocumentManager = FileDocumentManager.getInstance();
+        Document document = fileDocumentManager.getDocument(file);
+        if (document != null)
+        {
+            document.setText(content);
+            fileDocumentManager.saveDocument(document);
+        }
     }
 }

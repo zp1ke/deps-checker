@@ -11,11 +11,11 @@
     <change-notes><![CDATA[
         <b>v0.1.x</b>
         <ul>
-            <li><a href="https://maven.apache.org/" target="_blank">Maven</a> support</li>
+            <li><a href="https://maven.apache.org/" target="_blank">Maven</a> support.</li>
         </ul>
         <b>v0.2.x</b>
         <ul>
-            <li><a href="https://gradle.org/" target="_blank">Gradle</a> support</li>
+            <li><a href="https://gradle.org/" target="_blank">Gradle</a> support.</li>
         </ul>
     ]]></change-notes>
 
