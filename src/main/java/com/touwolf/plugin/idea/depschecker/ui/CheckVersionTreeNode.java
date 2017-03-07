@@ -58,19 +58,18 @@ public class CheckVersionTreeNode extends DefaultMutableTreeNode
         return null;
     }
 
-    public boolean hasEmptyDependencies()
+    public int upgradableDependencies()
     {
         if (isPom())
         {
             PomInfo pom = (PomInfo) info;
-            return pom.getDependencies().isEmpty() &&
-                pom.getDependenciesManagement().isEmpty();
+            return pom.getUpgradableDependencies();
         }
         if (isGradle())
         {
-            GradleInfo pom = (GradleInfo) info;
-            return pom.getDependencies().isEmpty();
+            GradleInfo gradle = (GradleInfo) info;
+            return gradle.getUpgradableDependencies();
         }
-        return false;
+        return 0;
     }
 }

@@ -15,42 +15,40 @@ public class CheckVersionCellRenderer extends NodeRenderer
         if (CheckVersionTreeNode.class.isAssignableFrom(value.getClass()))
         {
             CheckVersionTreeNode node = (CheckVersionTreeNode) value;
-            String extraAppend = null;
-            SimpleTextAttributes extraAttr = SimpleTextAttributes.GRAY_ATTRIBUTES;
-            SimpleTextAttributes textAttr = SimpleTextAttributes.GRAY_ATTRIBUTES;
+            String upgradeVersion = null;
+            int upgradable = 0;
             if (node.isPom())
             {
                 setIcon(Icons.MAVEN);
-                if (node.hasEmptyDependencies())
-                {
-                    extraAppend = "No dependencies founded!";
-                    extraAttr = SimpleTextAttributes.ERROR_ATTRIBUTES;
-                }
+                upgradable = node.upgradableDependencies();
             }
             else if (node.isGradle())
             {
                 setIcon(Icons.GRADLE);
-                if (node.hasEmptyDependencies())
-                {
-                    extraAppend = "No dependencies founded!";
-                    extraAttr = SimpleTextAttributes.ERROR_ATTRIBUTES;
-                }
+                upgradable = node.upgradableDependencies();
             }
             else if (node.isDependency())
             {
                 setIcon(PlatformIcons.LIBRARY_ICON);
-                String upgradeVersion = node.getToUpgradeVersion();
-                if (upgradeVersion != null)
-                {
-                    textAttr = SimpleTextAttributes.ERROR_ATTRIBUTES;
-                    extraAppend = "Can upgrade to " + upgradeVersion;
-                }
+                upgradeVersion = node.getToUpgradeVersion();
             }
-            append("  (" + node.getVersion() + ")", textAttr);
-            if (extraAppend != null)
+            if (!node.getVersion().isEmpty())
             {
-                setToolTipText(extraAppend);
-                append("  " + extraAppend, extraAttr);
+                append("  (" + node.getVersion() + ")", SimpleTextAttributes.GRAY_ATTRIBUTES);
+            }
+            if (upgradable > 0)
+            {
+                StringBuilder upgradableText = new StringBuilder()
+                    .append(upgradable)
+                    .append(upgradable == 1 ? " dependency" : " dependencies")
+                    .append(" can upgrade!");
+                setToolTipText(upgradableText.toString());
+                append("  " + upgradableText.toString(), SimpleTextAttributes.ERROR_ATTRIBUTES);
+            }
+            if (upgradeVersion != null)
+            {
+                setToolTipText("Can upgrade to " + upgradeVersion);
+                append("  Can upgrade to " + upgradeVersion, SimpleTextAttributes.ERROR_ATTRIBUTES);
             }
         }
     }

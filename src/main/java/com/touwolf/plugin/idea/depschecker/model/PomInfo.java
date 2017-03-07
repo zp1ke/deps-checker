@@ -9,7 +9,7 @@ import org.apache.maven.model.Parent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class PomInfo extends BaseInfo
+public class PomInfo extends DependenciesHolderInfo
 {
     private PomInfo(@NotNull String groupId, @NotNull String artifactId, @NotNull String version)
     {
@@ -17,8 +17,6 @@ public class PomInfo extends BaseInfo
     }
 
     private Set<DependencyInfo> dependenciesManagement;
-
-    private Set<DependencyInfo> dependencies;
 
     @NotNull
     public Set<DependencyInfo> getDependenciesManagement()
@@ -28,16 +26,6 @@ public class PomInfo extends BaseInfo
             dependenciesManagement = new HashSet<>();
         }
         return dependenciesManagement;
-    }
-
-    @NotNull
-    public Set<DependencyInfo> getDependencies()
-    {
-        if (dependencies == null)
-        {
-            dependencies = new HashSet<>();
-        }
-        return dependencies;
     }
 
     @Nullable

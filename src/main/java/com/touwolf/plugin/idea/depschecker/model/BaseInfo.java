@@ -2,7 +2,7 @@ package com.touwolf.plugin.idea.depschecker.model;
 
 import org.jetbrains.annotations.NotNull;
 
-public class BaseInfo
+public abstract class BaseInfo
 {
     private final String groupId;
 
