@@ -60,11 +60,10 @@ public class CheckVersionTree
 
     private void updateUI(String message)
     {
-        setStatus(message, 0);
+        SwingUtilities.invokeLater(() -> setStatus(message, 0));
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("Projects");
         DefaultTreeModel model = new DefaultTreeModel(root);
         tree.setModel(model);
-        upgrading = false;
         SwingUtilities.invokeLater(() ->
         {
             setStatus("Loading projects...", 0);
@@ -72,6 +71,7 @@ public class CheckVersionTree
             List<GradleInfo> gradleInfos = GradleHelper.findGradleInfos(baseDir);
             updateTree(model, root, pomInfos, gradleInfos);
         });
+        upgrading = false;
     }
 
     private void updateTree(DefaultTreeModel model, DefaultMutableTreeNode root,
@@ -134,12 +134,13 @@ public class CheckVersionTree
             {
                 String groupArtifact = selectedDependency.getGroupId() + ":" + selectedDependency.getArtifactId();
                 setStatus("Upgrading " + groupArtifact + "...", 0);
-                manager.upgrade(selectedDependency, dependencyInfo ->
-                {
-                    String message = "Upgraded " + groupArtifact + ". Reloading...";
-                    manager.notifyByBallon(message, MessageType.INFO);
-                    updateUI(message);
-                });
+                new Thread(() ->
+                    manager.upgrade(selectedDependency, dependencyInfo ->
+                    {
+                        String message = "Upgraded " + groupArtifact;
+                        manager.notifyByBallon(message, MessageType.INFO);
+                        updateUI(message + ". Reloading...");
+                    })).start();
             }
         });
         reload.addActionListener(e ->
