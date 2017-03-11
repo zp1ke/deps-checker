@@ -10,13 +10,14 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 intellij {
-    version '2016.3'
+    version '171.3780.15'
     pluginName 'deps-checker'
     sandboxDirectory = "${rootProject.rootDir}/idea-sandbox"
     publish {
         username project.hasProperty('publishUsername') ? project.property('publishUsername') : ''
         password project.hasProperty('publishPassword') ? project.property('publishPassword') : ''
     }
+    updateSinceUntilBuild = false
 }
 
 group 'com.touwolf.plugin.idea.depschecker'
