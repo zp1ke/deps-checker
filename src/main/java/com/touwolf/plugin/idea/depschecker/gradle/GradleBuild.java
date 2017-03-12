@@ -23,17 +23,14 @@ public class GradleBuild
     {
         this.content = new LinkedList<>(content);
         dependencies = new HashMap<>();
-        parseContent();
+        parseCoordinates();
+        parseDependencies();
     }
 
-    private void parseContent()
+    private void parseCoordinates()
     {
-        int startLine = -1;
-        int startBlockLine = -1;
-        int opened = 0;
-        for (int line = 0; line < content.size(); line++)
+        content.forEach(statement ->
         {
-            String statement = content.get(line);
             if (statement.contains("group") && group == null)
             {
                 group = parseFormalKeyValue("group", statement);
@@ -42,6 +39,17 @@ public class GradleBuild
             {
                 version = parseFormalKeyValue("version", statement);
             }
+        });
+    }
+
+    private void parseDependencies()
+    {
+        int startLine = -1;
+        int startBlockLine = -1;
+        int opened = 0;
+        for (int line = 0; line < content.size(); line++)
+        {
+            String statement = content.get(line);
             if (startLine < 0 && statement.contains("dependencies"))
             {
                 startLine = line;
