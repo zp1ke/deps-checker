@@ -1,4 +1,4 @@
-<idea-plugin version="3">
+<idea-plugin>
     <id>touwolf.depschecker</id>
     <name>Java Dependencies Checker</name>
     <vendor email="miche.atucha@gmail.com"
@@ -22,7 +22,7 @@
 
     <depends>com.intellij.modules.java</depends>
 
-    <idea-version since-build="2016.3" />
+    <idea-version since-build="162.1121"/>
 
     <extensions defaultExtensionNs="com.intellij" />
 
