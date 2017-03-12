@@ -19,7 +19,7 @@ public class GradleTests
             content += "compile group: '" + group + i + "', name: '" + name + i + "', version: '" + version + i + "'\n";
         }
         content += "}";
-        GradleBuild build = new GradleBuild(Arrays.asList(content.split("\n")));
+        GradleBuild build = GradleBuild.of(Arrays.asList(content.split("\n")));
         Assert.assertEquals(times, build.getDependencies().size());
         for (int i = 0; i < times; i++)
         {

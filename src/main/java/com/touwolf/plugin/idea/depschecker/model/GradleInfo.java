@@ -13,7 +13,8 @@ public class GradleInfo extends DependenciesHolderInfo
     @NotNull
     public static GradleInfo of(@NotNull String path, @NotNull GradleBuild build)
     {
-        GradleInfo info = new GradleInfo(path, "", "");
+        String name = path.replaceAll("/", ".");
+        GradleInfo info = new GradleInfo(build.getGroup(), name, build.getVersion());
         build.getDependencies().forEach(gradleDependency ->
         {
             DependencyInfo dependency = DependencyInfo.of(gradleDependency);

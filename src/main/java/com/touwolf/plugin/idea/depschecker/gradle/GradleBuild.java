@@ -5,22 +5,28 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.jetbrains.annotations.NotNull;
 
 public class GradleBuild
 {
     private final List<String> content;
 
+    private String group;
+
+    private String version;
+
     private final Map<Integer, GradleDependency> dependencies;
 
-    public GradleBuild(@NotNull List<String> content)
+    private GradleBuild(@NotNull List<String> content)
     {
         this.content = new LinkedList<>(content);
         dependencies = new HashMap<>();
-        initDependencies();
+        parseContent();
     }
 
-    private void initDependencies()
+    private void parseContent()
     {
         int startLine = -1;
         int startBlockLine = -1;
@@ -28,6 +34,14 @@ public class GradleBuild
         for (int line = 0; line < content.size(); line++)
         {
             String statement = content.get(line);
+            if (statement.contains("group") && group == null)
+            {
+                group = parseFormalKeyValue("group", statement);
+            }
+            if (statement.contains("version") && version == null)
+            {
+                version = parseFormalKeyValue("version", statement);
+            }
             if (startLine < 0 && statement.contains("dependencies"))
             {
                 startLine = line;
@@ -57,6 +71,26 @@ public class GradleBuild
                 }
             }
         }
+    }
+
+    private String parseFormalKeyValue(String key, String line)
+    {
+        String regex = "\\s*" + key + ":*\\s*'(?<value>.*)'";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(line);
+        boolean found = matcher.find();
+        if (!found)
+        {
+            regex = regex.replaceAll("'", "\"");
+            pattern = Pattern.compile(regex);
+            matcher = pattern.matcher(line);
+            found = matcher.find();
+        }
+        if (found)
+        {
+            return matcher.group("value");
+        }
+        return null;
     }
 
     private void parseDependencies(int fromLine, int toLine)
@@ -101,7 +135,8 @@ public class GradleBuild
         return false;
     }
 
-    public static GradleBuild read(InputStream stream) throws IOException
+    @NotNull
+    public static GradleBuild read(@NotNull InputStream stream) throws IOException
     {
         BufferedReader buf = new BufferedReader(new InputStreamReader(stream));
         List<String> content = new LinkedList<>();
@@ -112,5 +147,31 @@ public class GradleBuild
             line = buf.readLine();
         }
         return new GradleBuild(content);
+    }
+
+    @NotNull
+    public static GradleBuild of(@NotNull List<String> content)
+    {
+        return new GradleBuild(content);
+    }
+
+    @NotNull
+    public String getGroup()
+    {
+        if (group != null)
+        {
+            return group;
+        }
+        return "";
+    }
+
+    @NotNull
+    public String getVersion()
+    {
+        if (version != null)
+        {
+            return version;
+        }
+        return "";
     }
 }
