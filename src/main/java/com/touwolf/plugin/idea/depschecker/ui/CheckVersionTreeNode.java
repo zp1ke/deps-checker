@@ -63,7 +63,7 @@ public class CheckVersionTreeNode extends DefaultMutableTreeNode
         if (isPom())
         {
             PomInfo pom = (PomInfo) info;
-            return pom.getUpgradableDependencies();
+            return pom.getUpgradableDependencies() + pom.getUpgradableDependenciesManagement();
         }
         if (isGradle())
         {

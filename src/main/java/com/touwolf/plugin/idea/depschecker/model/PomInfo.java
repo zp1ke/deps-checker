@@ -101,4 +101,22 @@ public class PomInfo extends DependenciesHolderInfo
         }
         return null;
     }
+
+    private int upgradable = -1;
+
+    public int getUpgradableDependenciesManagement()
+    {
+        if (upgradable < 0)
+        {
+            upgradable = 0;
+            for (DependencyInfo dependency : getDependenciesManagement())
+            {
+                if (dependency.canUpgrade())
+                {
+                    upgradable++;
+                }
+            }
+        }
+        return upgradable;
+    }
 }
