@@ -13,13 +13,17 @@ public class GradleTests
         String name = "dep.name";
         String version = "dep.version";
         int times = 2;
-        String content = "dependencies {\n";
+        StringBuilder content = new StringBuilder("dependencies {\n");
         for (int i = 0; i < times; i++)
         {
-            content += "compile group: '" + group + i + "', name: '" + name + i + "', version: '" + version + i + "'\n";
+            content
+                .append("compile group: '").append(group).append(i)
+                .append("', name: '").append(name).append(i)
+                .append("', version: '").append(version).append(i)
+                .append("'\n");
         }
-        content += "}";
-        GradleBuild build = GradleBuild.of(Arrays.asList(content.split("\n")));
+        content.append("}");
+        GradleBuild build = GradleBuild.of(Arrays.asList(content.toString().split("\n")));
         Assert.assertEquals(times, build.getDependencies().size());
         for (int i = 0; i < times; i++)
         {
