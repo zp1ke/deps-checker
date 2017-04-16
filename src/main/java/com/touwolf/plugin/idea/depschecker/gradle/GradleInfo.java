@@ -1,6 +1,7 @@
-package com.touwolf.plugin.idea.depschecker.model;
+package com.touwolf.plugin.idea.depschecker.gradle;
 
-import com.touwolf.plugin.idea.depschecker.gradle.GradleBuild;
+import com.touwolf.plugin.idea.depschecker.model.DependenciesHolderInfo;
+import com.touwolf.plugin.idea.depschecker.model.DependencyInfo;
 import org.jetbrains.annotations.NotNull;
 
 public class GradleInfo extends DependenciesHolderInfo

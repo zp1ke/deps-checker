@@ -3,7 +3,7 @@ package com.touwolf.plugin.idea.depschecker.helper;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.touwolf.plugin.idea.depschecker.gradle.GradleBuild;
 import com.touwolf.plugin.idea.depschecker.model.DependencyInfo;
-import com.touwolf.plugin.idea.depschecker.model.GradleInfo;
+import com.touwolf.plugin.idea.depschecker.gradle.GradleInfo;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;

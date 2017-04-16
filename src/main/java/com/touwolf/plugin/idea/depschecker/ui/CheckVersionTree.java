@@ -6,7 +6,7 @@ import com.touwolf.plugin.idea.depschecker.ProjectManager;
 import com.touwolf.plugin.idea.depschecker.helper.GradleHelper;
 import com.touwolf.plugin.idea.depschecker.helper.MavenHelper;
 import com.touwolf.plugin.idea.depschecker.model.DependencyInfo;
-import com.touwolf.plugin.idea.depschecker.model.GradleInfo;
+import com.touwolf.plugin.idea.depschecker.gradle.GradleInfo;
 import com.touwolf.plugin.idea.depschecker.model.PomInfo;
 import java.awt.*;
 import java.util.Collection;

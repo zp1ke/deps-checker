@@ -4,7 +4,7 @@ import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class GradleTests
+public class GradleBuildTests
 {
     @Test
     public void formalDependenciesTest()
