@@ -13,10 +13,21 @@ public class PomModelTests
         PomModel pomModel = PomModel.parse(POM_XML);
         Assert.assertNotNull(pomModel);
         Assert.assertEquals("com.touwolf.pass2word", pomModel.getGroupId());
+
         Assert.assertEquals(2, pomModel.getDependencies().size());
         for (DependencyModel dependency : pomModel.getDependencies())
         {
             int lineIndex = "bridje-orm".equals(dependency.getArtifactId()) ? 88 : 93;
+            Assert.assertTrue(dependency.getStartLine() == lineIndex);
+            Assert.assertTrue(dependency.getEndLine() > dependency.getStartLine());
+        }
+
+        DependenciesHolder depsMg = pomModel.getDependencyManagement();
+        Assert.assertNotNull(depsMg);
+        Assert.assertEquals(2, depsMg.getDependencies().size());
+        for (DependencyModel dependency : depsMg.getDependencies())
+        {
+            int lineIndex = "commons-codec".equals(dependency.getArtifactId()) ? 73 : 78;
             Assert.assertTrue(dependency.getStartLine() == lineIndex);
             Assert.assertTrue(dependency.getEndLine() > dependency.getStartLine());
         }

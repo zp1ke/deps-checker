@@ -2,19 +2,20 @@ package com.touwolf.plugin.idea.depschecker.maven;
 
 import java.io.StringReader;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 @XmlRootElement(name = "project")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class PomModel
+public class PomModel extends DependenciesHolder
 {
     private String groupId;
 
@@ -22,9 +23,7 @@ public class PomModel
 
     private String version;
 
-    @XmlElementWrapper(name = "dependencies")
-    @XmlElements(@XmlElement(name = "dependency", type = DependencyModel.class))
-    private List<DependencyModel> dependencies;
+    private DependenciesHolder dependencyManagement;
 
     public static PomModel parse(String xmlContent) throws JAXBException, XMLStreamException
     {
@@ -37,18 +36,11 @@ public class PomModel
 
         PomModel pomModel = PomModel.class.cast(um.unmarshal(xsr));
         List<String> lines = Arrays.asList(xmlContent.split("\\n"));
-        pomModel.getDependencies().forEach(dependency ->
+        pomModel.updateDependenciesLines(lines);
+        if (pomModel.dependencyManagement != null)
         {
-            for (int i = dependency.getStartLine(); i <= lines.size(); i++)
-            {
-                String line = lines.get(i);
-                if (line.contains("</dependency>"))
-                {
-                    dependency.setEndLine(i);
-                    break;
-                }
-            }
-        });
+            pomModel.dependencyManagement.updateDependenciesLines(lines);
+        }
         return pomModel;
     }
 
@@ -82,17 +74,13 @@ public class PomModel
         this.version = version;
     }
 
-    public List<DependencyModel> getDependencies()
+    public DependenciesHolder getDependencyManagement()
     {
-        if (dependencies == null)
-        {
-            dependencies = new LinkedList<>();
-        }
-        return dependencies;
+        return dependencyManagement;
     }
 
-    public void setDependencies(List<DependencyModel> dependencies)
+    public void setDependencyManagement(DependenciesHolder dependencyManagement)
     {
-        this.dependencies = dependencies;
+        this.dependencyManagement = dependencyManagement;
     }
 }
