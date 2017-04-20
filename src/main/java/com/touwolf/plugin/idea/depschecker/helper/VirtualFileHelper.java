@@ -60,7 +60,7 @@ public class VirtualFileHelper
             {
                 files.putAll(findMapFiles(child, filter, currentPath));
             }
-            else if (!child.isDirectory() && filter.equals(child.getName()))
+            else if (filter.equals(child.getName()))
             {
                 files.put(currentPath, child);
             }

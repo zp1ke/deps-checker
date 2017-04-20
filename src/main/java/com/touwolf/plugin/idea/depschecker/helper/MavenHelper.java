@@ -1,22 +1,18 @@
 package com.touwolf.plugin.idea.depschecker.helper;
 
 import com.intellij.openapi.vfs.VirtualFile;
+import com.touwolf.plugin.idea.depschecker.maven.PomModel;
 import com.touwolf.plugin.idea.depschecker.model.DependencyInfo;
-import com.touwolf.plugin.idea.depschecker.model.PomInfo;
+import com.touwolf.plugin.idea.depschecker.model.ProjectInfo;
 import com.touwolf.plugin.idea.depschecker.rest.RestClient;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.maven.model.Dependency;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -82,13 +78,13 @@ public class MavenHelper
     }
 
     @NotNull
-    public static List<PomInfo> findPomInfos(@NotNull VirtualFile baseDir)
+    public static List<ProjectInfo> findPomInfos(@NotNull VirtualFile baseDir)
     {
-        List<PomInfo> poms = new LinkedList<>();
+        List<ProjectInfo> poms = new LinkedList<>();
         List<VirtualFile> pomFiles = VirtualFileHelper.findFiles(baseDir, "pom.xml");
         pomFiles.forEach(pomFile ->
         {
-            PomInfo pom = parsePom(pomFile);
+            ProjectInfo pom = parsePom(pomFile);
             if (pom != null)
             {
                 poms.add(pom);
@@ -98,25 +94,26 @@ public class MavenHelper
     }
 
     @Nullable
-    private static PomInfo parsePom(@NotNull VirtualFile file)
+    private static ProjectInfo parsePom(@NotNull VirtualFile file)
     {
-        MavenXpp3Reader reader = new MavenXpp3Reader();
         try
         {
-            Model model = reader.read(file.getInputStream());
-            Model parent = null;
-            if (model.getParent() != null && file.getParent() != null && file.getParent().getParent() != null)
+            String content = VirtualFileHelper.read(file);
+            PomModel model = PomModel.parse(content);
+            PomModel parent = null;
+            if (file.getParent() != null && file.getParent().getParent() != null)
             {
                 VirtualFile parentDirFile = file.getParent().getParent();
                 VirtualFile parentFile = parentDirFile.findChild("pom.xml");
                 if (parentFile != null)
                 {
-                    parent = reader.read(parentFile.getInputStream());
+                    String parentContent = VirtualFileHelper.read(parentFile);
+                    parent = PomModel.parse(parentContent);
                 }
             }
-            return PomInfo.parse(model, parent);
+            return ProjectInfo.parse(model, parent);
         }
-        catch (IOException | XmlPullParserException ex)
+        catch (IOException | JAXBException | XMLStreamException ex)
         {
             LOG.log(Level.SEVERE, ex.getMessage());
             return null;
@@ -125,6 +122,7 @@ public class MavenHelper
 
     public static void upgradeDependency(@NotNull VirtualFile baseDir, @NotNull DependencyInfo dependencyInfo)
     {
+        /*
         List<VirtualFile> pomFiles = VirtualFileHelper.findFiles(baseDir, "pom.xml");
         MavenXpp3Reader reader = new MavenXpp3Reader();
         MavenXpp3Writer writer = new MavenXpp3Writer();
@@ -151,8 +149,10 @@ public class MavenHelper
                 LOG.log(Level.SEVERE, ex.getMessage());
             }
         });
+        */
     }
 
+    /*
     private static boolean upgradeDependency(DependencyInfo dependencyInfo, List<Dependency> dependencies)
     {
         for (Dependency dependency : dependencies)
@@ -166,4 +166,5 @@ public class MavenHelper
         }
         return false;
     }
+    */
 }

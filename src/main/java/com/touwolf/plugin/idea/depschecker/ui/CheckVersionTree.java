@@ -7,7 +7,7 @@ import com.touwolf.plugin.idea.depschecker.helper.GradleHelper;
 import com.touwolf.plugin.idea.depschecker.helper.MavenHelper;
 import com.touwolf.plugin.idea.depschecker.model.DependencyInfo;
 import com.touwolf.plugin.idea.depschecker.gradle.GradleInfo;
-import com.touwolf.plugin.idea.depschecker.model.PomInfo;
+import com.touwolf.plugin.idea.depschecker.model.ProjectInfo;
 import java.awt.*;
 import java.util.Collection;
 import java.util.List;
@@ -67,7 +67,7 @@ public class CheckVersionTree
         SwingUtilities.invokeLater(() ->
         {
             setStatus("Loading projects...", 0);
-            List<PomInfo> pomInfos = MavenHelper.findPomInfos(baseDir);
+            List<ProjectInfo> pomInfos = MavenHelper.findPomInfos(baseDir);
             List<GradleInfo> gradleInfos = GradleHelper.findGradleInfos(baseDir);
             updateTree(model, root, pomInfos, gradleInfos);
         });
@@ -75,7 +75,7 @@ public class CheckVersionTree
     }
 
     private void updateTree(DefaultTreeModel model, DefaultMutableTreeNode root,
-                            List<PomInfo> pomInfos, List<GradleInfo> gradleInfos)
+                            List<ProjectInfo> pomInfos, List<GradleInfo> gradleInfos)
     {
         if (!SwingUtilities.isEventDispatchThread())
         {
@@ -151,7 +151,7 @@ public class CheckVersionTree
         });
     }
 
-    private CheckVersionTreeNode createPomNode(PomInfo pomInfo)
+    private CheckVersionTreeNode createPomNode(ProjectInfo pomInfo)
     {
         CheckVersionTreeNode pomNode = new CheckVersionTreeNode(pomInfo);
         DefaultMutableTreeNode depsNode = createDependenciesNode(pomInfo.getDependenciesManagement(), "Dependencies Management");

@@ -14,6 +14,10 @@ public class PomModelTests
         Assert.assertNotNull(pomModel);
         Assert.assertEquals("com.touwolf.pass2word", pomModel.getGroupId());
 
+        Assert.assertEquals(4, pomModel.getProperties().size());
+        Assert.assertTrue(pomModel.getProperties().containsKey("bridje.version"));
+        Assert.assertEquals("0.3.0", pomModel.getProperties().get("bridje.version"));
+
         Assert.assertEquals(2, pomModel.getDependencies().size());
         for (DependencyModel dependency : pomModel.getDependencies())
         {

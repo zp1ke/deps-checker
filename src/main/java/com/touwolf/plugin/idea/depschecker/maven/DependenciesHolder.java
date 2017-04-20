@@ -35,9 +35,4 @@ public class DependenciesHolder
         }
         return dependencies;
     }
-
-    public void setDependencies(List<DependencyModel> dependencies)
-    {
-        this.dependencies = dependencies;
-    }
 }

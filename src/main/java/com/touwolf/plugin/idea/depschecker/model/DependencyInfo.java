@@ -2,9 +2,9 @@ package com.touwolf.plugin.idea.depschecker.model;
 
 import com.touwolf.plugin.idea.depschecker.gradle.GradleDependency;
 import com.touwolf.plugin.idea.depschecker.helper.MavenHelper;
+import com.touwolf.plugin.idea.depschecker.maven.DependencyModel;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
-import org.apache.maven.model.Dependency;
 import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.expr.MapEntryExpression;
 import org.codehaus.groovy.ast.expr.NamedArgumentListExpression;
@@ -35,7 +35,8 @@ public class DependencyInfo extends BaseInfo
     }
 
     @Nullable
-    public static DependencyInfo parse(@Nullable Dependency dependency, @NotNull Properties properties)
+    public static DependencyInfo parse(@Nullable DependencyModel dependency,
+                                       @NotNull Map<String, String> properties)
     {
         if (dependency == null)
         {
@@ -100,7 +101,8 @@ public class DependencyInfo extends BaseInfo
     }
 
     @Nullable
-    private static String findVersion(@NotNull Dependency dependency, @NotNull Properties properties)
+    private static String findVersion(@NotNull DependencyModel dependency,
+                                      @NotNull Map<String, String> properties)
     {
         if (dependency.getVersion() != null)
         {
@@ -115,7 +117,7 @@ public class DependencyInfo extends BaseInfo
                     if (properties.containsKey(propertyName))
                     {
                         version = version.substring(0, propStartTag) +
-                                properties.getProperty(propertyName) +
+                                properties.get(propertyName) +
                                 version.substring(propEndTag + 1);
                         return version;
                     }

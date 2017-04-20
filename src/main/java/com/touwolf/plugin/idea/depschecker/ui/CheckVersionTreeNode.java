@@ -3,7 +3,7 @@ package com.touwolf.plugin.idea.depschecker.ui;
 import com.touwolf.plugin.idea.depschecker.model.BaseInfo;
 import com.touwolf.plugin.idea.depschecker.model.DependencyInfo;
 import com.touwolf.plugin.idea.depschecker.gradle.GradleInfo;
-import com.touwolf.plugin.idea.depschecker.model.PomInfo;
+import com.touwolf.plugin.idea.depschecker.model.ProjectInfo;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 public class CheckVersionTreeNode extends DefaultMutableTreeNode
@@ -18,7 +18,7 @@ public class CheckVersionTreeNode extends DefaultMutableTreeNode
 
     public boolean isPom()
     {
-        return (info instanceof PomInfo);
+        return (info instanceof ProjectInfo);
     }
 
     public boolean isGradle()
@@ -62,7 +62,7 @@ public class CheckVersionTreeNode extends DefaultMutableTreeNode
     {
         if (isPom())
         {
-            PomInfo pom = (PomInfo) info;
+            ProjectInfo pom = (ProjectInfo) info;
             return pom.getUpgradableDependencies() + pom.getUpgradableDependenciesManagement();
         }
         if (isGradle())

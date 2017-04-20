@@ -1,17 +1,14 @@
 package com.touwolf.plugin.idea.depschecker.model;
 
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
-import org.apache.maven.model.Dependency;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.Parent;
+import com.touwolf.plugin.idea.depschecker.maven.DependencyModel;
+import com.touwolf.plugin.idea.depschecker.maven.PomModel;
+import java.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class PomInfo extends DependenciesHolderInfo
+public class ProjectInfo extends DependenciesHolderInfo
 {
-    private PomInfo(@NotNull String groupId, @NotNull String artifactId, @NotNull String version)
+    private ProjectInfo(@NotNull String groupId, @NotNull String artifactId, @NotNull String version)
     {
         super(groupId, artifactId, version);
     }
@@ -29,30 +26,26 @@ public class PomInfo extends DependenciesHolderInfo
     }
 
     @Nullable
-    public static PomInfo parse(@Nullable Model model, @Nullable Model parent)
+    public static ProjectInfo parse(@Nullable PomModel model, @Nullable PomModel parent)
     {
-        if (model == null)
+        if (model == null || model.getArtifactId() == null)
         {
             return null;
         }
-        String groupId = findGroupId(model);
-        if (groupId == null)
+        String groupId = findGroupId(model, parent);
+        String version = findVersion(model, parent);
+        if (groupId == null || version == null)
         {
             return null;
         }
-        String version = findVersion(model);
-        if (version == null)
-        {
-            return null;
-        }
-        PomInfo info = new PomInfo(groupId, model.getArtifactId(), version);
-        Properties properties = new Properties();
+        ProjectInfo info = new ProjectInfo(groupId, model.getArtifactId(), version);
+        Map<String, String> properties = new HashMap<>();
         if (parent != null)
         {
             properties.putAll(parent.getProperties());
         }
         properties.putAll(model.getProperties());
-        for (Dependency dependency : model.getDependencies())
+        for (DependencyModel dependency : model.getDependencies())
         {
             DependencyInfo depInfo = DependencyInfo.parse(dependency, properties);
             if (depInfo != null)
@@ -61,26 +54,27 @@ public class PomInfo extends DependenciesHolderInfo
             }
         }
         if (model.getDependencyManagement() != null)
-        for (Dependency dependency : model.getDependencyManagement().getDependencies())
         {
-            DependencyInfo depInfo = DependencyInfo.parse(dependency, properties);
-            if (depInfo != null)
+            for (DependencyModel dependency : model.getDependencyManagement().getDependencies())
             {
-                info.getDependenciesManagement().add(depInfo);
+                DependencyInfo depInfo = DependencyInfo.parse(dependency, properties);
+                if (depInfo != null)
+                {
+                    info.getDependenciesManagement().add(depInfo);
+                }
             }
         }
         return info;
     }
 
     @Nullable
-    private static String findGroupId(@NotNull Model model)
+    private static String findGroupId(@NotNull PomModel model, @Nullable PomModel parent)
     {
         if (model.getGroupId() != null)
         {
             return model.getGroupId();
         }
-        Parent parent = model.getParent();
-        if (parent.getGroupId() != null)
+        if (parent != null && parent.getGroupId() != null)
         {
             return parent.getGroupId();
         }
@@ -88,14 +82,13 @@ public class PomInfo extends DependenciesHolderInfo
     }
 
     @Nullable
-    private static String findVersion(@NotNull Model model)
+    private static String findVersion(@NotNull PomModel model, @Nullable PomModel parent)
     {
         if (model.getVersion() != null)
         {
             return model.getVersion();
         }
-        Parent parent = model.getParent();
-        if (parent.getVersion() != null)
+        if (parent != null && parent.getVersion() != null)
         {
             return parent.getVersion();
         }

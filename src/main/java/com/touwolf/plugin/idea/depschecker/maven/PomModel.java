@@ -1,17 +1,15 @@
 package com.touwolf.plugin.idea.depschecker.maven;
 
 import java.io.StringReader;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import org.w3c.dom.Element;
 
 @XmlRootElement(name = "project")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -24,6 +22,13 @@ public class PomModel extends DependenciesHolder
     private String version;
 
     private DependenciesHolder dependencyManagement;
+
+    @XmlElementWrapper(name = "properties")
+    @XmlAnyElement(lax = true)
+    private List<Element> nodeProperties;
+
+    @XmlTransient
+    private Map<String, String> properties;
 
     public static PomModel parse(String xmlContent) throws JAXBException, XMLStreamException
     {
@@ -41,6 +46,17 @@ public class PomModel extends DependenciesHolder
         {
             pomModel.dependencyManagement.updateDependenciesLines(lines);
         }
+        if (pomModel.nodeProperties != null)
+        {
+            pomModel.nodeProperties
+                .parallelStream()
+                .filter(element -> element.getChildNodes().getLength() > 0)
+                .forEach(element ->
+                {
+                    String value = element.getChildNodes().item(0).getNodeValue();
+                    pomModel.getProperties().put(element.getTagName(), value);
+                });
+        }
         return pomModel;
     }
 
@@ -49,19 +65,9 @@ public class PomModel extends DependenciesHolder
         return groupId;
     }
 
-    public void setGroupId(String groupId)
-    {
-        this.groupId = groupId;
-    }
-
     public String getArtifactId()
     {
         return artifactId;
-    }
-
-    public void setArtifactId(String artifactId)
-    {
-        this.artifactId = artifactId;
     }
 
     public String getVersion()
@@ -69,18 +75,17 @@ public class PomModel extends DependenciesHolder
         return version;
     }
 
-    public void setVersion(String version)
-    {
-        this.version = version;
-    }
-
     public DependenciesHolder getDependencyManagement()
     {
         return dependencyManagement;
     }
 
-    public void setDependencyManagement(DependenciesHolder dependencyManagement)
+    public Map<String, String> getProperties()
     {
-        this.dependencyManagement = dependencyManagement;
+        if (properties == null)
+        {
+            properties = new HashMap<>();
+        }
+        return properties;
     }
 }
