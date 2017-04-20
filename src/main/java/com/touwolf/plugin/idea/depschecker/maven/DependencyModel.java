@@ -52,4 +52,9 @@ public class DependencyModel
     {
         this.endLine = endLine;
     }
+
+    public void setVersion(String version)
+    {
+        this.version = version;
+    }
 }

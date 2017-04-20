@@ -56,7 +56,11 @@ public class GradleHelper
             try
             {
                 GradleBuild build = GradleBuild.read(file.getInputStream());
-                boolean upgraded = build.upgradeDependency(dependencyInfo.getGroupId(), dependencyInfo.getArtifactId(), dependencyInfo.getLatestVersion());
+                boolean upgraded = build.upgradeDependency(
+                    dependencyInfo.getGroupId(),
+                    dependencyInfo.getArtifactId(),
+                    dependencyInfo.getLatestVersion()
+                );
                 if (upgraded)
                 {
                     StringBuilder content = new StringBuilder();

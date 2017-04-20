@@ -122,49 +122,29 @@ public class MavenHelper
 
     public static void upgradeDependency(@NotNull VirtualFile baseDir, @NotNull DependencyInfo dependencyInfo)
     {
-        /*
         List<VirtualFile> pomFiles = VirtualFileHelper.findFiles(baseDir, "pom.xml");
-        MavenXpp3Reader reader = new MavenXpp3Reader();
-        MavenXpp3Writer writer = new MavenXpp3Writer();
         pomFiles.forEach(file ->
         {
             try
             {
-                Model model = reader.read(file.getInputStream());
-                boolean upgraded = upgradeDependency(dependencyInfo, model.getDependencies());
-                if (model.getDependencyManagement() != null)
-                {
-                    upgraded |= upgradeDependency(dependencyInfo, model.getDependencyManagement().getDependencies());
-                }
+                String content = VirtualFileHelper.read(file);
+                PomModel model = PomModel.parse(content);
+                boolean upgraded = model.upgradeDependency(
+                    dependencyInfo.getGroupId(),
+                    dependencyInfo.getArtifactId(),
+                    dependencyInfo.getLatestVersion()
+                );
                 if (upgraded)
                 {
-                    Writer contentWriter = new StringWriter();
-                    writer.write(contentWriter, model);
-                    contentWriter.flush();
-                    VirtualFileHelper.save(file, contentWriter.toString());
+                    StringBuilder builder = new StringBuilder();
+                    model.getContent().forEach(line -> builder.append(line).append("\n"));
+                    VirtualFileHelper.save(file, builder.toString());
                 }
             }
-            catch (IOException | XmlPullParserException ex)
+            catch (IOException | JAXBException | XMLStreamException ex)
             {
                 LOG.log(Level.SEVERE, ex.getMessage());
             }
         });
-        */
     }
-
-    /*
-    private static boolean upgradeDependency(DependencyInfo dependencyInfo, List<Dependency> dependencies)
-    {
-        for (Dependency dependency : dependencies)
-        {
-            if (dependency.getGroupId().equals(dependencyInfo.getGroupId()) &&
-                dependency.getArtifactId().equals(dependencyInfo.getArtifactId()))
-            {
-                dependency.setVersion(dependencyInfo.getLatestVersion());
-                return true;
-            }
-        }
-        return false;
-    }
-    */
 }
