@@ -45,26 +45,29 @@ public class ProjectInfo extends DependenciesHolderInfo
             properties.putAll(parent.getProperties());
         }
         properties.putAll(model.getProperties());
-        for (DependencyModel dependency : model.getDependencies())
+        info.getDependencies()
+            .addAll(readDependencies(model.getDependencies(), properties));
+        if (model.getDependencyManagement() != null)
+        {
+            info.getDependenciesManagement()
+                .addAll(readDependencies(model.getDependencyManagement().getDependencies(), properties));
+        }
+        return info;
+    }
+
+    private static List<DependencyInfo> readDependencies(List<DependencyModel> dependencies,
+                                                         Map<String, String> properties)
+    {
+        List<DependencyInfo> dependenciesList = new LinkedList<>();
+        for (DependencyModel dependency : dependencies)
         {
             DependencyInfo depInfo = DependencyInfo.parse(dependency, properties);
             if (depInfo != null)
             {
-                info.getDependencies().add(depInfo);
+                dependenciesList.add(depInfo);
             }
         }
-        if (model.getDependencyManagement() != null)
-        {
-            for (DependencyModel dependency : model.getDependencyManagement().getDependencies())
-            {
-                DependencyInfo depInfo = DependencyInfo.parse(dependency, properties);
-                if (depInfo != null)
-                {
-                    info.getDependenciesManagement().add(depInfo);
-                }
-            }
-        }
-        return info;
+        return dependenciesList;
     }
 
     @Nullable
