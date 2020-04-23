@@ -20,7 +20,7 @@ public class MavenHelper
 {
     private static final Logger LOG = Logger.getLogger(MavenHelper.class.getName());
 
-    private static final String MAVEN_API_URL = "http://search.maven.org/solrsearch/select?q=g:\"GROUP\"+AND+a:\"ARTIFACT\"&rows=5&wt=json";
+    private static final String MAVEN_API_URL = "https://search.maven.org/solrsearch/select?q=g:GROUP+AND+a:ARTIFACT&rows=5&wt=json";
 
     public static final String UNKNOWN_VERSION = "?";
 
